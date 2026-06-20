@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LinkedIn AI Command Centre</title>
+<title>Social Media AI Command Centre</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -29,7 +29,160 @@
   --sans:      'Inter', system-ui, sans-serif;
   --radius:    10px;
   --radius-sm: 6px;
+  --tw:        #1D9BF0;
+  --tw-dim:    #1783CC;
+  --tw-glow:   rgba(29,155,240,0.18);
+  --wa:        #25D366;
+  --wa-dim:    #1BAD52;
+  --wa-glow:   rgba(37,211,102,0.15);
 }
+
+/* ── WhatsApp styles ─────────────────────────────────── */
+.wa-page-icon { background: var(--wa-glow); border-color: rgba(37,211,102,0.4); }
+.wa-page-icon svg { stroke: #4ADE80; }
+.btn-wa { background: var(--wa); color: #fff; border-color: var(--wa); }
+.btn-wa:hover { background: var(--wa-dim); }
+.nav-item.wa-active { background: var(--wa-glow); color: #4ADE80; border-color: rgba(37,211,102,0.3); font-weight: 500; }
+
+/* WhatsApp chat bubble UI */
+.wa-chat-window {
+  background: #0B1215;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 360px;
+  max-height: 520px;
+}
+.wa-chat-header {
+  background: #1F2C33;
+  padding: 10px 16px;
+  display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid #2A3942;
+  flex-shrink: 0;
+}
+.wa-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--wa); display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 600; color: #fff; flex-shrink: 0;
+}
+.wa-contact-name { font-size: 14px; font-weight: 500; color: #E9EDEF; }
+.wa-contact-sub { font-size: 11px; color: #8696A0; }
+.wa-messages {
+  flex: 1; overflow-y: auto; padding: 16px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.wa-bubble {
+  max-width: 75%; padding: 8px 12px; border-radius: 8px;
+  font-size: 13px; line-height: 1.6; position: relative;
+  word-break: break-word;
+}
+.wa-bubble.them {
+  background: #202C33; color: #E9EDEF;
+  border-radius: 0 8px 8px 8px; align-self: flex-start;
+}
+.wa-bubble.me {
+  background: #005C4B; color: #E9EDEF;
+  border-radius: 8px 0 8px 8px; align-self: flex-end;
+}
+.wa-bubble.ai-suggestion {
+  background: rgba(37,211,102,0.12); color: #E9EDEF;
+  border: 1px solid rgba(37,211,102,0.3);
+  border-radius: 8px; align-self: flex-end;
+}
+.wa-time { font-size: 10px; color: #8696A0; margin-top: 3px; text-align: right; }
+.wa-sender { font-size: 11px; color: var(--wa); font-weight: 600; margin-bottom: 2px; }
+.wa-input-bar {
+  background: #1F2C33; padding: 8px 12px;
+  display: flex; gap: 8px; align-items: flex-end;
+  border-top: 1px solid #2A3942; flex-shrink: 0;
+}
+.wa-input-bar textarea {
+  flex: 1; background: #2A3942; border: none; border-radius: 20px;
+  color: #E9EDEF; padding: 9px 14px; font-size: 13px; min-height: 40px;
+  max-height: 120px; resize: none; outline: none; line-height: 1.5;
+}
+.wa-send-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--wa); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background .15s;
+}
+.wa-send-btn:hover { background: var(--wa-dim); }
+.wa-send-btn svg { width: 18px; height: 18px; fill: #fff; }
+
+/* Status preview card */
+.status-preview {
+  background: #111B21;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  max-width: 340px;
+}
+.status-preview-bar {
+  height: 3px; background: var(--wa);
+  border-radius: 3px 3px 0 0;
+}
+.status-preview-body {
+  padding: 20px 18px 16px;
+  min-height: 180px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+}
+.status-preview-text {
+  font-size: 15px; color: #fff; line-height: 1.6;
+  white-space: pre-wrap; text-shadow: 0 1px 3px rgba(0,0,0,.5);
+}
+.status-preview-time {
+  font-size: 11px; color: rgba(255,255,255,.6); margin-top: 8px;
+}
+
+/* Channel post card */
+.channel-card {
+  background: #1F2C33; border: 1px solid #2A3942;
+  border-radius: var(--radius); overflow: hidden;
+}
+.channel-card-header {
+  padding: 10px 14px; border-bottom: 1px solid #2A3942;
+  display: flex; align-items: center; gap: 9px;
+}
+.channel-icon {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--wa); display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.channel-name { font-size: 13px; font-weight: 600; color: #E9EDEF; }
+.channel-sub { font-size: 11px; color: #8696A0; }
+.channel-body { padding: 14px; font-size: 13px; line-height: 1.8; color: #E9EDEF; white-space: pre-wrap; }
+.channel-footer {
+  padding: 8px 14px; border-top: 1px solid #2A3942;
+  display: flex; gap: 16px; align-items: center;
+}
+.channel-reaction { font-size: 12px; color: #8696A0; display: flex; align-items: center; gap: 4px; }
+
+/* Parsed chat message in conv analyser */
+.parsed-msg { display: flex; gap: 8px; margin-bottom: 6px; align-items: flex-start; }
+.parsed-msg.right { flex-direction: row-reverse; }
+.parsed-bubble {
+  background: #202C33; color: #E9EDEF; border-radius: 8px;
+  padding: 7px 11px; font-size: 12px; line-height: 1.6; max-width: 70%;
+}
+.parsed-msg.right .parsed-bubble { background: #005C4B; }
+.parsed-name { font-size: 10px; color: var(--wa); font-weight: 600; margin-bottom: 2px; }
+.ai-reply-options { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.ai-reply-opt {
+  background: #1F2C33; border: 1px solid rgba(37,211,102,0.3);
+  border-radius: 10px; padding: 10px 14px; font-size: 13px; line-height: 1.7;
+  color: #E9EDEF; position: relative; cursor: default;
+}
+.ai-reply-opt-num { font-size: 10px; color: var(--wa); font-weight: 600; margin-bottom:4px; text-transform:uppercase; letter-spacing:.05em; }
+.ai-reply-copy {
+  position: absolute; top: 8px; right: 10px;
+  background: none; border: 1px solid rgba(37,211,102,0.3);
+  border-radius: var(--radius-sm); padding: 3px 8px;
+  font-size: 11px; color: #4ADE80; cursor: pointer; font-family: var(--sans);
+}
+.ai-reply-copy:hover { background: var(--wa-glow); }
 
 html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; line-height: 1.6; }
 
@@ -267,7 +420,32 @@ select option { background: var(--card); }
 .modal p { font-size: 13px; color: var(--muted); margin-bottom: 18px; line-height: 1.6; }
 .modal-footer { display: flex; gap: 8px; margin-top: 18px; }
 
-/* ── Scrollbar ───────────────────────────────────────── */
+/* ── Twitter accent ──────────────────────────────────── */
+.nav-item.tw-active { background: var(--tw-glow); color: #60CAFF; border-color: rgba(29,155,240,0.35); font-weight: 500; }
+.tw-page-icon { background: var(--tw-glow); border-color: rgba(29,155,240,0.4); }
+.tw-page-icon svg { stroke: #60CAFF; }
+.btn-tw { background: var(--tw); color: #fff; }
+.btn-tw:hover { background: var(--tw-dim); }
+.tw-char-fill { stroke: var(--tw) !important; }
+.tweet-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; position: relative; }
+.tweet-num { font-size: 10px; font-weight: 600; color: var(--tw); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+.tweet-text { font-size: 13px; line-height: 1.8; color: var(--text); white-space: pre-wrap; }
+.tweet-meta { font-size: 11px; color: var(--faint); margin-top: 6px; }
+.thread-tweet { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 6px; position: relative; }
+.thread-num { font-size: 10px; color: var(--tw); font-weight: 600; margin-bottom: 5px; font-family: var(--mono); }
+.thread-line { position: absolute; left: 22px; top: 38px; bottom: -6px; width: 2px; background: var(--border); }
+.platform-divider { display: flex; align-items: center; gap: 10px; margin: 6px 0 4px; }
+.platform-divider span { font-size: 10px; font-weight: 600; color: var(--faint); letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
+.platform-divider::before, .platform-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ── Tweet char counter ──────────────────────────────── */
+.tw-char-wrap { display: flex; align-items: center; gap: 8px; }
+.tw-ring { position: relative; width: 34px; height: 34px; flex-shrink: 0; }
+.tw-ring svg { width: 34px; height: 34px; transform: rotate(-90deg); }
+.tw-ring .tr { fill: none; stroke: var(--border); stroke-width: 3; }
+.tw-ring .tf { fill: none; stroke: var(--tw); stroke-width: 3; stroke-linecap: round; transition: stroke-dashoffset .25s, stroke .25s; }
+.tw-ring-n { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 600; color: var(--muted); font-family: var(--mono); }
+
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
@@ -310,12 +488,12 @@ select option { background: var(--card); }
 
 <!-- Topbar -->
 <header class="topbar">
-  <div class="topbar-logo">
-    <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+  <div class="topbar-logo" style="background:linear-gradient(135deg,#0A66C2 50%,#1D9BF0 100%)">
+    <svg viewBox="0 0 24 24" fill="#fff" width="18" height="18"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg>
   </div>
   <div>
-    <div class="topbar-title">LinkedIn AI Command Centre</div>
-    <div class="topbar-sub">Powered by Claude</div>
+    <div class="topbar-title">Social Media AI Command Centre</div>
+    <div class="topbar-sub">LinkedIn &amp; Twitter/X — Powered by Claude</div>
   </div>
   <div class="topbar-divider"></div>
   <div class="api-badge"><span class="api-dot" id="api-dot"></span><span id="api-status">No key set</span></div>
@@ -324,43 +502,61 @@ select option { background: var(--card); }
 
 <!-- Sidebar -->
 <nav class="sidebar">
-  <div class="nav-section-label">Tools</div>
-  <div class="nav-item active" onclick="navigate('post', this)">
+  <div class="platform-divider"><span>LinkedIn</span></div>
+  <div class="nav-item active" data-nav="post">
     <svg class="nav-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-    <div>
-      <div>Post composer</div>
-      <div class="nav-item-sub">Write & format posts</div>
-    </div>
+    <div><div>Post composer</div><div class="nav-item-sub">Write & format posts</div></div>
   </div>
-  <div class="nav-item" onclick="navigate('feed', this)">
+  <div class="nav-item" data-nav="feed">
     <svg class="nav-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M4 11a9 9 0 019 9M4 4a16 16 0 0116 16M5 19a1 1 0 110-2 1 1 0 010 2z"/></svg>
-    <div>
-      <div>Feed analyser</div>
-      <div class="nav-item-sub">Summarise & extract insights</div>
-    </div>
+    <div><div>Feed analyser</div><div class="nav-item-sub">Summarise & extract insights</div></div>
   </div>
-  <div class="nav-item" onclick="navigate('comment', this)">
+  <div class="nav-item" data-nav="comment">
     <svg class="nav-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-    <div>
-      <div>Comment engine</div>
-      <div class="nav-item-sub">Generate smart comments</div>
-    </div>
+    <div><div>Comment engine</div><div class="nav-item-sub">Generate smart comments</div></div>
   </div>
-  <div class="nav-item" onclick="navigate('calendar', this)">
+  <div class="nav-item" data-nav="calendar">
     <svg class="nav-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-    <div>
-      <div>Content calendar</div>
-      <div class="nav-item-sub">Plan 2-week schedules</div>
-    </div>
+    <div><div>Content calendar</div><div class="nav-item-sub">Plan 2-week schedules</div></div>
   </div>
+
+  <div class="platform-divider" style="margin-top:10px"><span>Twitter / X</span></div>
+  <div class="nav-item" data-nav="tweet">
+    <svg class="nav-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg>
+    <div><div>Tweet composer</div><div class="nav-item-sub">Tweets & threads</div></div>
+  </div>
+  <div class="nav-item" data-nav="timeline">
+    <svg class="nav-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M4 11a9 9 0 019 9M4 4a16 16 0 0116 16M5 19a1 1 0 110-2 1 1 0 010 2z"/></svg>
+    <div><div>Timeline analyser</div><div class="nav-item-sub">Insights from your feed</div></div>
+  </div>
+  <div class="nav-item" data-nav="reply">
+    <svg class="nav-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 00-4-4H4"/></svg>
+    <div><div>Reply engine</div><div class="nav-item-sub">Smart tweet replies</div></div>
+  </div>
+  <div class="nav-item" data-nav="twcal">
+    <svg class="nav-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+    <div><div>Tweet calendar</div><div class="nav-item-sub">Plan tweet schedule</div></div>
+  </div>
+
+  <div class="platform-divider" style="margin-top:10px"><span>WhatsApp</span></div>
+  <div class="nav-item" data-nav="wa-status">
+    <svg class="nav-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+    <div><div>Status composer</div><div class="nav-item-sub">Status & channel posts</div></div>
+  </div>
+  <div class="nav-item" data-nav="wa-channel">
+    <svg class="nav-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+    <div><div>Channel broadcast</div><div class="nav-item-sub">Write channel updates</div></div>
+  </div>
+  <div class="nav-item" data-nav="wa-chat">
+    <svg class="nav-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    <div><div>Chat assistant</div><div class="nav-item-sub">AI replies from chats</div></div>
+  </div>
+
   <div class="nav-spacer"></div>
-  <div class="nav-section-label">Saved</div>
-  <div class="nav-item" onclick="navigate('saved', this)">
+  <div class="platform-divider"><span>Saved</span></div>
+  <div class="nav-item" data-nav="saved">
     <svg class="nav-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-    <div>
-      <div>Saved posts</div>
-      <div class="nav-item-sub" id="saved-count-label">0 drafts</div>
-    </div>
+    <div><div>Saved posts</div><div class="nav-item-sub" id="saved-count-label">0 drafts</div></div>
   </div>
 </nav>
 
@@ -490,7 +686,9 @@ select option { background: var(--card); }
 
     <div class="alert alert-info">
       <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-      <span>Scroll your LinkedIn feed, select all visible text, copy it, and paste below. Messy text is fine — Claude will parse it.</span>
+      <div><strong style="display:block;margin-bottom:6px">No login needed — here's how it works</strong>
+LinkedIn doesn't allow third-party apps to read your feed. Instead:<br>
+① Open <strong>linkedin.com/feed</strong> in your browser &nbsp;②&nbsp;Scroll to load 10–20 posts &nbsp;③&nbsp;Select all text on the page (Ctrl+A) and copy &nbsp;④&nbsp;Paste below — Claude parses and analyses it instantly</div>
     </div>
 
     <div class="grid-3">
@@ -697,11 +895,605 @@ select option { background: var(--card); }
     <div id="saved-list"><div style="color:var(--faint);font-size:13px;padding:20px 0">No saved drafts yet. Generate a post and click "Save draft."</div></div>
   </section>
 
+  <!-- ── TWEET COMPOSER ───────────────────────────── -->
+  <section class="pane" id="pane-tweet">
+    <div class="page-header">
+      <div class="page-icon tw-page-icon">
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg>
+      </div>
+      <div>
+        <h2>Tweet composer</h2>
+        <p>Single tweets or full threads — Claude writes them sharp and punchy in your voice.</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">Topic or idea</label>
+        <input type="text" id="tw-topic" placeholder="e.g. Why most Nigerian founders undercharge">
+      </div>
+      <div class="field">
+        <label class="field-label">Your context</label>
+        <input type="text" id="tw-ctx" placeholder="e.g. Lagos founder, building SaaS products">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Format</div>
+      <div class="chips" id="tw-fmt-chips">
+        <button class="chip active" data-val="single">Single tweet</button>
+        <button class="chip" data-val="thread">Thread (5–7 tweets)</button>
+        <button class="chip" data-val="thread-long">Long thread (10+ tweets)</button>
+        <button class="chip" data-val="quote">Quote tweet setup</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Tone</div>
+      <div class="chips" id="tw-tone-chips">
+        <button class="chip active" data-val="direct and punchy, no fluff">Direct</button>
+        <button class="chip" data-val="hot take, provocative and opinionated">Hot take</button>
+        <button class="chip" data-val="educational and insightful, teach something">Educational</button>
+        <button class="chip" data-val="funny and witty, Lagos street smart humour">Funny</button>
+        <button class="chip" data-val="storytelling, narrative arc">Story</button>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">Hashtags (optional)</label>
+        <input type="text" id="tw-tags" placeholder="#StartupNG #BuildInPublic">
+      </div>
+      <div class="field">
+        <label class="field-label">Hook style</label>
+        <select id="tw-hook">
+          <option value="a bold statement that forces a reaction">Bold statement</option>
+          <option value="a question that stops the scroll">Scroll-stopping question</option>
+          <option value="a controversial opinion">Controversial opinion</option>
+          <option value="a surprising statistic or number">Surprising stat</option>
+          <option value="a short story opener">Story opener</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-tw" onclick="genTweet()">
+        <svg viewBox="0 0 24 24" stroke-width="2" fill="none" stroke="currentColor" style="width:15px;height:15px"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Generate tweet
+      </button>
+      <button class="btn btn-ghost" onclick="genTweetVariant()" id="tw-variant-btn" style="display:none">
+        <svg viewBox="0 0 24 24" stroke-width="2" fill="none" stroke="currentColor" style="width:15px;height:15px"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        Different angle
+      </button>
+      <button class="btn btn-ghost" onclick="clearTweet()">Clear</button>
+    </div>
+    <div class="loader" id="tw-loader"><div class="spinner"></div> Writing your tweet...</div>
+
+    <div id="tw-result-wrap" style="display:none">
+      <div class="card">
+        <div class="card-label">Your tweet — ready to copy into X</div>
+        <div id="tw-output-single" style="display:none">
+          <div class="output" id="tw-out"></div>
+          <div class="output-actions" style="margin-top:8px">
+            <div class="tw-char-wrap">
+              <div class="tw-ring">
+                <svg viewBox="0 0 34 34"><circle class="tr" cx="17" cy="17" r="14"/><circle class="tf" id="tw-ring-fill" cx="17" cy="17" r="14" stroke-dasharray="88" stroke-dashoffset="88"/></svg>
+                <div class="tw-ring-n" id="tw-ring-num">0</div>
+              </div>
+              <span style="font-size:11px;color:var(--muted)" id="tw-char-label">0 / 280</span>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="copy-btn" onclick="copyEl('tw-out',this)">
+                <svg viewBox="0 0 24 24" stroke-width="2" style="width:13px;height:13px;stroke:currentColor;fill:none"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                Copy tweet
+              </button>
+              <button class="copy-btn" onclick="saveTweet()">
+                <svg viewBox="0 0 24 24" stroke-width="2" style="width:13px;height:13px;stroke:currentColor;fill:none"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/></svg>
+                Save draft
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="tw-output-thread" style="display:none">
+          <div id="tw-thread-list"></div>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button class="copy-btn" onclick="copyThread()">
+              <svg viewBox="0 0 24 24" stroke-width="2" style="width:13px;height:13px;stroke:currentColor;fill:none"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              Copy full thread
+            </button>
+            <button class="copy-btn" onclick="saveTweet()">
+              <svg viewBox="0 0 24 24" stroke-width="2" style="width:13px;height:13px;stroke:currentColor;fill:none"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/></svg>
+              Save draft
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TIMELINE ANALYSER ─────────────────────────── -->
+  <section class="pane" id="pane-timeline">
+    <div class="page-header">
+      <div class="page-icon tw-page-icon">
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M4 11a9 9 0 019 9M4 4a16 16 0 0116 16M5 19a1 1 0 110-2 1 1 0 010 2z"/></svg>
+      </div>
+      <div>
+        <h2>Timeline analyser</h2>
+        <p>Paste copied tweets from your X timeline. Claude extracts trends, hot takes, and reply opportunities.</p>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+      <div><strong style="display:block;margin-bottom:6px">No login needed — here's how it works</strong>
+Twitter/X doesn't allow third-party feed access. Instead:<br>
+① Open <strong>x.com</strong> or <strong>twitter.com</strong> in your browser &nbsp;②&nbsp;Scroll your timeline &nbsp;③&nbsp;Select all text (Ctrl+A) and copy &nbsp;④&nbsp;Paste below — Claude extracts the intelligence</div>
+    </div>
+
+    <div class="grid-3">
+      <div class="stat-card"><div class="stat-n" id="tw-stat-tweets">—</div><div class="stat-l">Tweets detected</div></div>
+      <div class="stat-card"><div class="stat-n" id="tw-stat-topics">—</div><div class="stat-l">Topics trending</div></div>
+      <div class="stat-card"><div class="stat-n" id="tw-stat-ideas">—</div><div class="stat-l">Tweet ideas</div></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">Pasted timeline content</label>
+        <textarea id="tl-in" style="min-height:140px" placeholder="Paste your copied X/Twitter timeline here..."></textarea>
+      </div>
+      <div class="field-group">
+        <div class="field">
+          <label class="field-label">Your niche / focus</label>
+          <input type="text" id="tl-focus" placeholder="e.g. Nigerian tech, startups, AI, fintech">
+        </div>
+        <div class="field">
+          <label class="field-label">Analysis goal</label>
+          <select id="tl-goal">
+            <option value="general intelligence briefing on trending topics">General briefing</option>
+            <option value="tweets worth replying to and how to reply">Find tweets to reply to</option>
+            <option value="tweet ideas and hot takes I could post">Generate tweet ideas</option>
+            <option value="market and competitor intelligence">Market intelligence</option>
+          </select>
+        </div>
+        <div class="btn-row" style="margin-top:auto">
+          <button class="btn btn-tw" onclick="genTimeline()">
+            <svg viewBox="0 0 24 24" stroke-width="2" fill="none" stroke="currentColor" style="width:15px;height:15px"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Analyse timeline
+          </button>
+          <button class="btn btn-ghost" onclick="clearTimeline()">Clear</button>
+        </div>
+        <div class="loader" id="tl-loader"><div class="spinner"></div> Analysing timeline...</div>
+      </div>
+    </div>
+
+    <div id="tl-results" style="display:none">
+      <div class="seg-tabs">
+        <button class="seg-tab active" onclick="showSeg('tl','insights',this)">Insights</button>
+        <button class="seg-tab" onclick="showSeg('tl','reply',this)">Reply to</button>
+        <button class="seg-tab" onclick="showSeg('tl','ideas',this)">Tweet ideas</button>
+        <button class="seg-tab" onclick="showSeg('tl','brief',this)">Full briefing</button>
+      </div>
+      <div class="seg-pane active" id="tl-seg-insights"></div>
+      <div class="seg-pane" id="tl-seg-reply"></div>
+      <div class="seg-pane" id="tl-seg-ideas"></div>
+      <div class="seg-pane" id="tl-seg-brief">
+        <div class="output" id="tl-brief-out"></div>
+        <div class="output-actions" style="margin-top:8px">
+          <span></span>
+          <button class="copy-btn" onclick="copyEl('tl-brief-out',this)">
+            <svg viewBox="0 0 24 24" stroke-width="2" style="width:13px;height:13px;stroke:currentColor;fill:none"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── REPLY ENGINE ──────────────────────────────── -->
+  <section class="pane" id="pane-reply">
+    <div class="page-header">
+      <div class="page-icon tw-page-icon">
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 00-4-4H4"/></svg>
+      </div>
+      <div>
+        <h2>Reply engine</h2>
+        <p>Paste any tweet. Claude writes 3 sharp, non-generic replies that get noticed.</p>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Tweet to reply to</label>
+      <textarea id="rep-tweet" style="min-height:100px" placeholder="Paste the tweet you want to reply to..."></textarea>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">Your context</label>
+        <input type="text" id="rep-ctx" placeholder="e.g. founder building digital products in Lagos">
+      </div>
+      <div class="field">
+        <label class="field-label">Reply goal</label>
+        <select id="rep-goal">
+          <option value="add a sharp insight or data point">Add insight</option>
+          <option value="ask a genuinely interesting follow-up question">Ask a question</option>
+          <option value="respectfully disagree or offer a counterpoint">Disagree / pushback</option>
+          <option value="share a directly relevant personal experience">Share experience</option>
+          <option value="agree and extend with a new angle">Agree and extend</option>
+          <option value="funny or witty response that stands out">Funny / witty</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Reply tone</div>
+      <div class="chips" id="rep-tone-chips">
+        <button class="chip active" data-val="sharp and direct">Sharp</button>
+        <button class="chip" data-val="thoughtful and measured">Thoughtful</button>
+        <button class="chip" data-val="witty and playful">Witty</button>
+        <button class="chip" data-val="expert and authoritative">Expert</button>
+        <button class="chip" data-val="humble and curious">Humble</button>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-tw" onclick="genReplies()">
+        <svg viewBox="0 0 24 24" stroke-width="2" fill="none" stroke="currentColor" style="width:15px;height:15px"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Generate 3 replies
+      </button>
+      <button class="btn btn-ghost" onclick="clearReplies()">Clear</button>
+    </div>
+    <div class="loader" id="rep-loader"><div class="spinner"></div> Crafting your replies...</div>
+    <div id="rep-results" style="display:none;margin-top:1rem"></div>
+  </section>
+
+  <!-- ── TWEET CALENDAR ────────────────────────────── -->
+  <section class="pane" id="pane-twcal">
+    <div class="page-header">
+      <div class="page-icon tw-page-icon">
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      </div>
+      <div>
+        <h2>Tweet calendar</h2>
+        <p>2-week Twitter/X content plan. Click any tweet to draft it instantly.</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">Your niche</label>
+        <input type="text" id="twcal-niche" placeholder="e.g. Nigerian startup ecosystem, SaaS, AI tools">
+      </div>
+      <div class="field">
+        <label class="field-label">Tweets per day</label>
+        <select id="twcal-freq">
+          <option value="1">1 per day</option>
+          <option value="2" selected>2 per day</option>
+          <option value="3">3 per day</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">Content pillars</label>
+        <input type="text" id="twcal-pillars" placeholder="e.g. build in public, hot takes, tips, founder life">
+      </div>
+      <div class="field">
+        <label class="field-label">Upcoming events</label>
+        <input type="text" id="twcal-events" placeholder="e.g. product launch next week, attending TechFest">
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-tw" onclick="genTwCal()">
+        <svg viewBox="0 0 24 24" stroke-width="2" fill="none" stroke="currentColor" style="width:15px;height:15px"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Generate 2-week calendar
+      </button>
+      <button class="btn btn-ghost" onclick="clearTwCal()">Clear</button>
+    </div>
+    <div class="loader" id="twcal-loader"><div class="spinner"></div> Planning your tweet calendar...</div>
+
+    <div id="twcal-results" style="display:none">
+      <div class="cal-list" id="twcal-list-items"></div>
+    </div>
+  </section>
+
+  <!-- ── WA STATUS COMPOSER ────────────────────────── -->
+  <section class="pane" id="pane-wa-status">
+    <div class="page-header">
+      <div class="page-icon wa-page-icon">
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      </div>
+      <div>
+        <h2>WhatsApp status composer</h2>
+        <p>Write engaging WhatsApp statuses — personal, business, or broadcast. Preview before you copy.</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">What's on your mind / topic</label>
+        <input type="text" id="was-topic" placeholder="e.g. Monday motivation for hustlers in Lagos">
+      </div>
+      <div class="field">
+        <label class="field-label">Your context</label>
+        <input type="text" id="was-ctx" placeholder="e.g. founder, freelancer, Lagos professional">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Status type</div>
+      <div class="chips" id="was-type-chips">
+        <button class="chip active" data-val="motivational and energising, short punchy lines">Motivation</button>
+        <button class="chip" data-val="business update or product announcement, professional but warm">Business update</button>
+        <button class="chip" data-val="personal reflection or life lesson, authentic and relatable">Personal</button>
+        <button class="chip" data-val="funny and witty, Nigerian street humour">Funny</button>
+        <button class="chip" data-val="promotional offer or discount, exciting and urgent">Promo / offer</button>
+        <button class="chip" data-val="thought-provoking question that gets people to reply">Engagement bait</button>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">Tone</label>
+        <div class="chips" id="was-tone-chips" style="margin-top:0">
+          <button class="chip active" data-val="warm and relatable">Warm</button>
+          <button class="chip" data-val="bold and direct">Bold</button>
+          <button class="chip" data-val="professional">Professional</button>
+          <button class="chip" data-val="playful and fun">Playful</button>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Emoji style</label>
+        <select id="was-emoji">
+          <option value="use 1-2 emojis sparingly">Minimal (1–2)</option>
+          <option value="use emojis liberally throughout">Expressive (many)</option>
+          <option value="no emojis at all">None</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-wa" onclick="genWaStatus()">
+        <svg viewBox="0 0 24 24" stroke-width="2" fill="none" stroke="currentColor" style="width:15px;height:15px"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Generate status
+      </button>
+      <button class="btn btn-ghost" onclick="genWaStatusVariant()" id="was-variant-btn" style="display:none">Different angle</button>
+      <button class="btn btn-ghost" onclick="clearWaStatus()">Clear</button>
+    </div>
+    <div class="loader" id="was-loader"><div class="spinner" style="border-top-color:var(--wa)"></div> Writing your status...</div>
+
+    <div id="was-result" style="display:none;margin-top:1rem">
+      <div class="grid-2">
+        <div>
+          <div class="card-label" style="margin-bottom:10px">Preview</div>
+          <div class="status-preview">
+            <div class="status-preview-bar"></div>
+            <div class="status-preview-body">
+              <div class="status-preview-text" id="was-preview-text">Your status appears here...</div>
+              <div class="status-preview-time">Now · 👁 0</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card-label" style="margin-bottom:10px">Full text</div>
+          <div class="output" id="was-out" style="min-height:160px"></div>
+          <div class="output-actions" style="margin-top:8px">
+            <span style="font-size:11px;color:var(--muted)" id="was-char-count"></span>
+            <button class="copy-btn" onclick="copyEl('was-out',this)">
+              <svg viewBox="0 0 24 24" stroke-width="2" style="width:13px;height:13px;stroke:currentColor;fill:none"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              Copy status
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── WA CHANNEL BROADCAST ──────────────────────── -->
+  <section class="pane" id="pane-wa-channel">
+    <div class="page-header">
+      <div class="page-icon wa-page-icon">
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+      </div>
+      <div>
+        <h2>Channel broadcast composer</h2>
+        <p>Write WhatsApp channel updates that feel personal, not corporate. Preview as a real channel post.</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">Channel name</label>
+        <input type="text" id="wac-name" placeholder="e.g. Konnekt.ng Official">
+      </div>
+      <div class="field">
+        <label class="field-label">Topic / update</label>
+        <input type="text" id="wac-topic" placeholder="e.g. New feature launch, weekly tips, special offer">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Post type</div>
+      <div class="chips" id="wac-type-chips">
+        <button class="chip active" data-val="product or feature announcement, exciting and clear">Launch / announcement</button>
+        <button class="chip" data-val="weekly tips or educational content, actionable and valuable">Tips / education</button>
+        <button class="chip" data-val="exclusive offer or discount for subscribers, urgent and exciting">Exclusive offer</button>
+        <button class="chip" data-val="community update or behind-the-scenes, personal and warm">Community update</button>
+        <button class="chip" data-val="story or case study showing real results">Success story</button>
+        <button class="chip" data-val="engagement question to get subscribers to reply">Engagement post</button>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">Key message / detail</label>
+        <textarea id="wac-detail" style="min-height:70px" placeholder="Any specific details, offers, links, or key points to include..."></textarea>
+      </div>
+      <div class="field-group">
+        <div class="field">
+          <label class="field-label">Audience</label>
+          <input type="text" id="wac-audience" placeholder="e.g. Nigerian SME owners, Lagos professionals">
+        </div>
+        <div class="field">
+          <label class="field-label">Call to action</label>
+          <input type="text" id="wac-cta" placeholder="e.g. Click the link, reply YES, share this">
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-wa" onclick="genWaChannel()">
+        <svg viewBox="0 0 24 24" stroke-width="2" fill="none" stroke="currentColor" style="width:15px;height:15px"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Write channel post
+      </button>
+      <button class="btn btn-ghost" onclick="clearWaChannel()">Clear</button>
+    </div>
+    <div class="loader" id="wac-loader"><div class="spinner" style="border-top-color:var(--wa)"></div> Writing your channel post...</div>
+
+    <div id="wac-result" style="display:none;margin-top:1rem">
+      <div class="grid-2">
+        <div>
+          <div class="card-label" style="margin-bottom:10px">Channel preview</div>
+          <div class="channel-card">
+            <div class="channel-card-header">
+              <div class="channel-icon" id="wac-preview-icon">K</div>
+              <div>
+                <div class="channel-name" id="wac-preview-name">Channel name</div>
+                <div class="channel-sub">Channel · Now</div>
+              </div>
+            </div>
+            <div class="channel-body" id="wac-preview-body">Your post appears here...</div>
+            <div class="channel-footer">
+              <div class="channel-reaction">👍 <span>0</span></div>
+              <div class="channel-reaction">❤️ <span>0</span></div>
+              <div class="channel-reaction">🔥 <span>0</span></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card-label" style="margin-bottom:10px">Full text</div>
+          <div class="output" id="wac-out" style="min-height:160px"></div>
+          <div class="output-actions" style="margin-top:8px">
+            <span style="font-size:11px;color:var(--muted)" id="wac-char-count"></span>
+            <button class="copy-btn" onclick="copyEl('wac-out',this)">
+              <svg viewBox="0 0 24 24" stroke-width="2" style="width:13px;height:13px;stroke:currentColor;fill:none"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              Copy post
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── WA CHAT ASSISTANT ──────────────────────────── -->
+  <section class="pane" id="pane-wa-chat">
+    <div class="page-header">
+      <div class="page-icon wa-page-icon">
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      </div>
+      <div>
+        <h2>Chat assistant</h2>
+        <p>Paste a WhatsApp conversation. Claude reads the context and suggests the best replies — customer service, sales, or personal.</p>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+      <span>Open WhatsApp → tap a chat → hold and select messages → Share → Copy. Then paste below. Format: <strong>[Name]: message</strong> per line, or paste raw exported chat text.</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">Your name in the chat</label>
+        <input type="text" id="wch-myname" placeholder="e.g. Olakunle, Me, You">
+      </div>
+      <div class="field">
+        <label class="field-label">Chat context</label>
+        <select id="wch-context">
+          <option value="customer service — the user is handling a customer inquiry or complaint">Customer service</option>
+          <option value="sales conversation — trying to close a deal or follow up on a lead">Sales / lead follow-up</option>
+          <option value="business negotiation or partnership discussion">Business / negotiation</option>
+          <option value="personal relationship — friend, family, or personal contact">Personal / social</option>
+          <option value="job or freelance opportunity discussion">Job / freelance</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Paste conversation here</label>
+      <textarea id="wch-convo" style="min-height:160px;font-family:var(--mono);font-size:12px" placeholder="[Customer]: Hi, I saw your product online. How much does it cost?
+[Me]: Hi! Thanks for reaching out. Which product are you referring to?
+[Customer]: The digital business card. Does it work offline?
+[Customer]: Also can I customise the design?"></textarea>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">Reply goal</label>
+        <select id="wch-goal">
+          <option value="give a helpful, clear answer to their question">Answer their question</option>
+          <option value="move the conversation toward a sale or booking">Push toward a sale</option>
+          <option value="handle the objection or complaint professionally and empathetically">Handle objection / complaint</option>
+          <option value="follow up warmly after no reply">Follow up (no reply)</option>
+          <option value="close the deal and get a commitment">Close the deal</option>
+          <option value="build rapport and keep the conversation going">Build rapport</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label">Reply tone</label>
+        <div class="chips" id="wch-tone-chips" style="margin-top:0">
+          <button class="chip active" data-val="warm and professional">Warm</button>
+          <button class="chip" data-val="friendly and casual">Friendly</button>
+          <button class="chip" data-val="direct and confident">Direct</button>
+          <button class="chip" data-val="empathetic and patient">Empathetic</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-wa" onclick="genWaReply()">
+        <svg viewBox="0 0 24 24" stroke-width="2" fill="none" stroke="currentColor" style="width:15px;height:15px"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Suggest replies
+      </button>
+      <button class="btn btn-ghost" onclick="clearWaChat()">Clear</button>
+    </div>
+    <div class="loader" id="wch-loader"><div class="spinner" style="border-top-color:var(--wa)"></div> Reading the conversation...</div>
+
+    <div id="wch-result" style="display:none;margin-top:1rem">
+      <div class="grid-2" id="wch-grid">
+        <div>
+          <div class="card-label" style="margin-bottom:10px">Conversation parsed</div>
+          <div class="wa-chat-window">
+            <div class="wa-chat-header">
+              <div class="wa-avatar" id="wch-avatar">?</div>
+              <div>
+                <div class="wa-contact-name" id="wch-contact-name">Contact</div>
+                <div class="wa-contact-sub">WhatsApp</div>
+              </div>
+            </div>
+            <div class="wa-messages" id="wch-messages"></div>
+            <div class="wa-input-bar">
+              <textarea placeholder="Type a message..." rows="1" id="wch-reply-input"></textarea>
+              <button class="wa-send-btn" onclick="sendManualReply()">
+                <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card-label" style="margin-bottom:10px">AI suggested replies</div>
+          <div id="wch-summary" class="insight" style="margin-bottom:12px;font-size:12px;border-left-color:var(--wa)"></div>
+          <div class="ai-reply-options" id="wch-replies"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </main>
 </div>
 
 <script>
-// ── State ───────────────────────────────────────────────────────────────
+// ── State (global) ───────────────────────────────────────────────────────
 const S = {
   apiKey: localStorage.getItem('li_apikey') || '',
   fmt: 'storytelling hook — personal journey with a lesson',
@@ -720,17 +1512,57 @@ function navigate(name, el) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
   el.classList.add('active');
-  document.getElementById('pane-' + name).classList.add('active');
+  const pane = document.getElementById('pane-' + name);
+  if (pane) pane.classList.add('active');
+  window.scrollTo(0, 0);
 }
 
-// ── Chip selectors ──────────────────────────────────────────────────────
-document.querySelectorAll('.chips').forEach(group => {
-  const key = group.id === 'fmt-chips' ? 'fmt' : group.id === 'tone-chips' ? 'tone' : 'ctone';
-  group.querySelectorAll('.chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      S[key] = chip.dataset.val;
+// ── DOM-dependent init (runs after page loads) ───────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  updateApiUI();
+  renderSaved();
+
+  // Wire sidebar nav via data-nav attributes
+  document.querySelectorAll('.nav-item[data-nav]').forEach(item => {
+    item.addEventListener('click', () => navigate(item.dataset.nav, item));
+  });
+
+  // LinkedIn chip selectors
+  document.querySelectorAll('.chips').forEach(group => {
+    const key = group.id === 'fmt-chips' ? 'fmt' : group.id === 'tone-chips' ? 'tone' : 'ctone';
+    group.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        S[key] = chip.dataset.val;
+      });
+    });
+  });
+
+  // Twitter chip selectors
+  ['tw-fmt-chips','tw-tone-chips','rep-tone-chips'].forEach(id => {
+    const group = document.getElementById(id);
+    if (!group) return;
+    const keyMap = {'tw-fmt-chips':'twFmt','tw-tone-chips':'twTone','rep-tone-chips':'repTone'};
+    group.querySelectorAll('.chip').forEach(c => {
+      c.addEventListener('click', () => {
+        group.querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
+        c.classList.add('active');
+        S[keyMap[id]] = c.dataset.val;
+      });
+    });
+  });
+
+  // WhatsApp chip selectors
+  [['was-type-chips','wasType'],['was-tone-chips','wasTone'],['wac-type-chips','wacType'],['wch-tone-chips','wchTone']].forEach(([id, key]) => {
+    const group = document.getElementById(id);
+    if (!group) return;
+    group.querySelectorAll('.chip').forEach(c => {
+      c.addEventListener('click', () => {
+        group.querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
+        c.classList.add('active');
+        S[key] = c.dataset.val;
+      });
     });
   });
 });
@@ -1227,6 +2059,722 @@ function deleteSaved(i) {
   S.saved.splice(i, 1);
   localStorage.setItem('li_saved', JSON.stringify(S.saved));
   renderSaved();
+}
+ ────────────────────────────────────────────────────────
+S.twFmt = 'single';
+S.twTone = 'direct and punchy, no fluff';
+S.repTone = 'sharp and direct';
+S.lastTwTopic = '';
+S.lastTwText = '';
+
+// ── Tweet char ring ──────────────────────────────────────────────────────
+function updateTwRing(text) {
+  const len = text.length; const max = 280; const circ = 88;
+  const pct = Math.min(len / max, 1);
+  const fill = document.getElementById('tw-ring-fill');
+  const num = document.getElementById('tw-ring-num');
+  const label = document.getElementById('tw-char-label');
+  if (!fill) return;
+  fill.style.strokeDashoffset = circ - pct * circ;
+  fill.style.stroke = len > 270 ? '#EF4444' : len > 240 ? '#F59E0B' : '#1D9BF0';
+  num.textContent = 280 - len;
+  num.style.color = len > 270 ? '#EF4444' : 'var(--muted)';
+  label.textContent = len + ' / 280';
+  label.style.color = len > 270 ? '#EF4444' : 'var(--muted)';
+}
+
+// ── TWEET COMPOSER ───────────────────────────────────────────────────────
+async function genTweet() {
+  const topic = document.getElementById('tw-topic').value.trim();
+  if (!topic) { alert('Add a topic first.'); return; }
+  const ctx = document.getElementById('tw-ctx').value.trim();
+  const tags = document.getElementById('tw-tags').value.trim();
+  const hook = document.getElementById('tw-hook').value;
+  const isThread = S.twFmt !== 'single';
+  S.lastTwTopic = topic;
+  loader('tw-loader', true);
+  document.getElementById('tw-result-wrap').style.display = 'none';
+
+  try {
+    if (!isThread) {
+      const text = await claude(
+`You are a Twitter/X ghostwriter for a Nigerian founder.
+
+Write ONE single tweet.
+Topic: ${topic}
+Writer context: ${ctx || 'Lagos-based founder building digital products'}
+Tone: ${S.twTone}
+Hook style: ${hook}
+${tags ? 'Include these hashtags: ' + tags : 'Add 1-2 relevant hashtags max'}
+
+Rules:
+- STRICTLY under 260 characters including hashtags
+- First 5 words must stop the scroll
+- Punchy, no corporate language, no "excited to share"
+- Sound like a real Nigerian founder talking to people — raw and specific
+- Return ONLY the tweet text, nothing else`, 200);
+
+      S.lastTwText = text;
+      document.getElementById('tw-out').textContent = text;
+      document.getElementById('tw-out').classList.remove('empty');
+      document.getElementById('tw-output-single').style.display = 'block';
+      document.getElementById('tw-output-thread').style.display = 'none';
+      updateTwRing(text);
+    } else {
+      const count = S.twFmt === 'thread-long' ? '10–14' : '5–7';
+      const raw = await claude(
+`You are a Twitter/X ghostwriter for a Nigerian founder. Write a tweet thread.
+
+Topic: ${topic}
+Writer context: ${ctx || 'Lagos-based founder building digital products'}
+Tone: ${S.twTone}
+Hook style: ${hook}
+Thread length: ${count} tweets
+${tags ? 'Add these hashtags to the last tweet: ' + tags : ''}
+
+Rules:
+- Each tweet STRICTLY under 260 characters
+- Tweet 1 is the hook — make it impossible to scroll past
+- Each tweet must be able to stand alone but also pull you to the next
+- End with a strong CTA or question
+- Number each tweet like: 1/ then 2/ etc.
+- Return ONLY the numbered tweets, each on its own line, nothing else`, 1000);
+
+      S.lastTwText = raw;
+      const tweets = raw.split('\n').filter(l => l.trim() && l.match(/^\d+\//));
+      const list = document.getElementById('tw-thread-list');
+      list.innerHTML = '';
+      tweets.forEach((tw, i) => {
+        const d = document.createElement('div');
+        d.className = 'thread-tweet';
+        if (i < tweets.length - 1) d.innerHTML += '<div class="thread-line"></div>';
+        d.innerHTML += `<div class="thread-num">${tw.match(/^\d+\//)?.[0] || (i+1)+'/'}</div>
+          <div style="font-size:13px;line-height:1.7;color:var(--text)">${tw.replace(/^\d+\/\s*/, '')}</div>
+          <div class="tweet-meta">${tw.replace(/^\d+\/\s*/, '').length} chars</div>`;
+        list.appendChild(d);
+      });
+      document.getElementById('tw-output-thread').style.display = 'block';
+      document.getElementById('tw-output-single').style.display = 'none';
+    }
+    document.getElementById('tw-result-wrap').style.display = 'block';
+    document.getElementById('tw-variant-btn').style.display = 'flex';
+  } catch(e) { if (e.message !== 'No API key set') alert('Error: ' + e.message); }
+  loader('tw-loader', false);
+}
+
+async function genTweetVariant() {
+  if (!S.lastTwTopic) return;
+  S.twFmt = document.querySelector('#tw-fmt-chips .chip.active')?.dataset.val || 'single';
+  await genTweet();
+}
+
+function copyThread() {
+  const tweets = [...document.querySelectorAll('#tw-thread-list .thread-tweet')].map(d => {
+    const num = d.querySelector('.thread-num')?.textContent || '';
+    const text = d.querySelector('div:nth-child(2)')?.textContent || '';
+    return num + ' ' + text;
+  }).join('\n\n');
+  navigator.clipboard.writeText(tweets).catch(() => {});
+}
+
+function saveTweet() {
+  const topic = document.getElementById('tw-topic').value.trim() || 'Tweet';
+  const text = S.lastTwText;
+  if (!text) return;
+  S.saved.unshift({ topic: '[X] ' + topic, text, savedAt: new Date().toISOString() });
+  localStorage.setItem('li_saved', JSON.stringify(S.saved));
+  renderSaved();
+}
+
+function clearTweet() {
+  document.getElementById('tw-topic').value = '';
+  document.getElementById('tw-ctx').value = '';
+  document.getElementById('tw-tags').value = '';
+  document.getElementById('tw-result-wrap').style.display = 'none';
+  document.getElementById('tw-variant-btn').style.display = 'none';
+  S.lastTwText = '';
+  updateTwRing('');
+}
+
+// ── TIMELINE ANALYSER ────────────────────────────────────────────────────
+async function genTimeline() {
+  const inp = document.getElementById('tl-in').value.trim();
+  if (!inp) { alert('Paste your timeline first.'); return; }
+  const focus = document.getElementById('tl-focus').value.trim();
+  const goal = document.getElementById('tl-goal').value;
+  loader('tl-loader', true);
+  document.getElementById('tl-results').style.display = 'none';
+  try {
+    const raw = await claude(
+`You are a Twitter/X intelligence analyst for a Nigerian founder.
+
+Analyse this pasted timeline content and return ONLY valid JSON:
+{
+  "tweet_count": <estimated distinct tweets>,
+  "topic_count": <distinct topics>,
+  "insights": ["insight 1","insight 2","insight 3","insight 4","insight 5"],
+  "reply_to": [
+    {"tweet":"short description","why":"why reply","angle":"what angle to take"},
+    {"tweet":"...","why":"...","angle":"..."},
+    {"tweet":"...","why":"...","angle":"..."}
+  ],
+  "ideas": ["tweet idea 1","tweet idea 2","tweet idea 3","tweet idea 4"],
+  "briefing": "3-4 sentence intelligence briefing on what's trending and what to do"
+}
+
+Focus: ${focus || 'Nigerian tech, startups, digital products'}
+Goal: ${goal}
+
+TIMELINE:
+${inp.slice(0, 4000)}`, 1400);
+
+    let data;
+    try { data = JSON.parse(raw); } catch(e) { const m = raw.match(/\{[\s\S]+\}/); if(m) data = JSON.parse(m[0]); else throw new Error('Parse failed'); }
+
+    document.getElementById('tw-stat-tweets').textContent = data.tweet_count || '~';
+    document.getElementById('tw-stat-topics').textContent = data.topic_count || '~';
+    document.getElementById('tw-stat-ideas').textContent = (data.ideas||[]).length || '~';
+
+    const ins = document.getElementById('tl-seg-insights');
+    ins.innerHTML = '';
+    (data.insights||[]).forEach(i => { const d=document.createElement('div'); d.className='insight'; d.textContent=i; ins.appendChild(d); });
+
+    const rep = document.getElementById('tl-seg-reply');
+    rep.innerHTML = '';
+    (data.reply_to||[]).forEach(e => {
+      const d=document.createElement('div'); d.className='insight';
+      d.innerHTML=`<div class="insight-title">${e.tweet}</div><div class="insight-sub">${e.why}</div><div style="font-size:12px;color:var(--tw);margin-top:4px">Angle: ${e.angle}</div>`;
+      rep.appendChild(d);
+    });
+
+    const ideas = document.getElementById('tl-seg-ideas');
+    ideas.innerHTML = '';
+    (data.ideas||[]).forEach((idea,i) => {
+      const d=document.createElement('div'); d.className='insight insight-clickable';
+      d.innerHTML=`<div style="font-size:10px;font-weight:600;color:var(--tw);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">Idea ${i+1} — click to draft</div>${idea}`;
+      d.onclick = () => {
+        navigate('tweet', document.querySelectorAll('.nav-item')[4]);
+        document.getElementById('tw-topic').value = idea;
+        setTimeout(genTweet, 100);
+      };
+      ideas.appendChild(d);
+    });
+
+    document.getElementById('tl-brief-out').textContent = data.briefing || '';
+    document.getElementById('tl-results').style.display = 'block';
+  } catch(e) { if(e.message !== 'No API key set') alert('Error: ' + e.message); }
+  loader('tl-loader', false);
+}
+
+function clearTimeline() {
+  document.getElementById('tl-in').value = '';
+  document.getElementById('tl-focus').value = '';
+  document.getElementById('tl-results').style.display = 'none';
+  ['tw-stat-tweets','tw-stat-topics','tw-stat-ideas'].forEach(id => document.getElementById(id).textContent = '—');
+}
+
+// ── REPLY ENGINE ─────────────────────────────────────────────────────────
+async function genReplies() {
+  const tweet = document.getElementById('rep-tweet').value.trim();
+  if (!tweet) { alert('Paste a tweet first.'); return; }
+  const ctx = document.getElementById('rep-ctx').value.trim();
+  const goal = document.getElementById('rep-goal').value;
+  loader('rep-loader', true);
+  document.getElementById('rep-results').style.display = 'none';
+  try {
+    const raw = await claude(
+`You are writing Twitter/X replies for a Nigerian founder.
+
+TWEET TO REPLY TO:
+${tweet}
+
+Replier context: ${ctx || 'Nigerian founder building digital products'}
+Reply goal: ${goal}
+Tone: ${S.repTone}
+
+Generate exactly 3 distinct replies as a JSON array:
+["reply 1","reply 2","reply 3"]
+
+Rules:
+- Each reply STRICTLY under 250 characters
+- NEVER start with "Great tweet!" or empty praise
+- Each must have a completely different approach
+- Sound like a real human, not AI-generated
+- Sharp enough to get noticed in a thread
+- Must serve the stated goal: ${goal}
+
+Return ONLY the JSON array.`, 500);
+
+    let replies;
+    try { replies = JSON.parse(raw); } catch(e) { const m = raw.match(/\[[\s\S]+\]/); if(m) replies=JSON.parse(m[0]); else replies=[raw]; }
+
+    const container = document.getElementById('rep-results');
+    container.innerHTML = '';
+    replies.forEach((r, i) => {
+      const d = document.createElement('div');
+      d.className = 'comment-card';
+      d.innerHTML = `
+        <div class="comment-num" style="color:var(--tw)">Reply option ${i+1} — ${r.length} chars</div>
+        <div class="comment-text" id="rep-text-${i}">${r}</div>
+        <div class="comment-copy">
+          <button class="copy-btn btn-sm" onclick="copyRep(${i},this)">
+            <svg viewBox="0 0 24 24" stroke-width="2" style="width:12px;height:12px;stroke:currentColor;fill:none"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy
+          </button>
+        </div>`;
+      container.appendChild(d);
+    });
+    container.style.display = 'block';
+  } catch(e) { if(e.message !== 'No API key set') alert('Error: ' + e.message); }
+  loader('rep-loader', false);
+}
+
+function copyRep(i, btn) {
+  navigator.clipboard.writeText(document.getElementById('rep-text-' + i).textContent).catch(()=>{});
+  const orig = btn.innerHTML;
+  btn.innerHTML = btn.innerHTML.replace('Copy','Copied!');
+  setTimeout(() => btn.innerHTML = orig, 1500);
+}
+
+function clearReplies() {
+  document.getElementById('rep-tweet').value = '';
+  document.getElementById('rep-ctx').value = '';
+  document.getElementById('rep-results').style.display = 'none';
+  document.getElementById('rep-results').innerHTML = '';
+}
+
+// ── TWEET CALENDAR ───────────────────────────────────────────────────────
+async function genTwCal() {
+  const niche = document.getElementById('twcal-niche').value.trim();
+  if (!niche) { alert('Add your niche first.'); return; }
+  const freq = parseInt(document.getElementById('twcal-freq').value);
+  const pillars = document.getElementById('twcal-pillars').value.trim();
+  const events = document.getElementById('twcal-events').value.trim();
+  loader('twcal-loader', true);
+  document.getElementById('twcal-results').style.display = 'none';
+  try {
+    const total = freq * 14;
+    const raw = await claude(
+`You are a Twitter/X content strategist for a Nigerian founder.
+
+Create a 2-week tweet calendar.
+Niche: ${niche}
+Tweets per day: ${freq}
+Content pillars: ${pillars || 'build in public, hot takes, tips, founder life, Nigerian market'}
+Events: ${events || 'none'}
+
+Return ONLY a JSON array of ${total} tweet objects:
+[
+  {
+    "day": <1-14>,
+    "slot": <1-${freq}>,
+    "format": "Single|Thread|Hot take|Tip|Story|Question",
+    "pillar": "pillar name",
+    "hook": "The exact first line of the tweet (under 100 chars)",
+    "angle": "one-line description of what this tweet is about"
+  }
+]
+Return ONLY the JSON array.`, 1400);
+
+    let posts;
+    try { posts = JSON.parse(raw); } catch(e) { const m = raw.match(/\[[\s\S]+\]/); if(m) posts=JSON.parse(m[0]); else throw new Error('Parse failed'); }
+
+    const today = new Date();
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+
+    const list = document.getElementById('twcal-list-items');
+    list.innerHTML = '';
+    let lastDay = 0;
+    posts.forEach(p => {
+      if (p.day !== lastDay) {
+        const date = new Date(monday); date.setDate(monday.getDate() + (p.day - 1));
+        const hdr = document.createElement('div');
+        hdr.style.cssText = 'font-size:11px;font-weight:600;color:var(--faint);letter-spacing:.06em;text-transform:uppercase;padding:10px 0 5px';
+        hdr.textContent = date.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'short'});
+        list.appendChild(hdr);
+        lastDay = p.day;
+      }
+      const d = document.createElement('div');
+      d.className = 'cal-list-item';
+      d.innerHTML = `
+        <div class="cal-list-date" style="color:var(--tw);min-width:50px">${p.format}</div>
+        <div class="cal-list-body">
+          <div class="cal-list-title">${p.angle}</div>
+          <div class="cal-list-meta">${p.pillar} · Tweet ${p.slot} of ${freq}</div>
+          <div class="cal-list-hook">"${p.hook}"</div>
+        </div>
+        <div class="cal-draft-btn" style="color:var(--tw)">Draft ↗</div>`;
+      d.onclick = () => {
+        navigate('tweet', document.querySelectorAll('.nav-item')[4]);
+        document.getElementById('tw-topic').value = p.angle;
+        document.querySelector('#tw-fmt-chips .chip.active')?.classList.remove('active');
+        const fmtChip = p.format === 'Thread' ? document.querySelector('#tw-fmt-chips .chip:nth-child(2)') : document.querySelector('#tw-fmt-chips .chip:first-child');
+        if (fmtChip) { fmtChip.classList.add('active'); S.twFmt = fmtChip.dataset.val; }
+        setTimeout(async () => {
+          loader('tw-loader', true);
+          try {
+            const text = await claude(`Write a Twitter ${p.format} about: ${p.angle}
+Opening hook (use EXACTLY): "${p.hook}"
+Nigerian founder voice. ${p.format === 'Thread' ? 'Make it 5-7 tweets numbered 1/ 2/ etc.' : 'Single tweet under 260 chars.'}
+Return ONLY the tweet text.`, 600);
+            S.lastTwText = text; S.lastTwTopic = p.angle;
+            if (p.format === 'Thread') {
+              const tweets = text.split('\n').filter(l => l.trim() && l.match(/^\d+\//));
+              const tl = document.getElementById('tw-thread-list'); tl.innerHTML = '';
+              tweets.forEach((tw,i) => { const dd=document.createElement('div'); dd.className='thread-tweet'; dd.innerHTML=`<div class="thread-num">${tw.match(/^\d+\//)?.[0]||''}</div><div style="font-size:13px;line-height:1.7">${tw.replace(/^\d+\/\s*/,'')}</div>`; tl.appendChild(dd); });
+              document.getElementById('tw-output-thread').style.display='block';
+              document.getElementById('tw-output-single').style.display='none';
+            } else {
+              document.getElementById('tw-out').textContent=text;
+              document.getElementById('tw-output-single').style.display='block';
+              document.getElementById('tw-output-thread').style.display='none';
+              updateTwRing(text);
+            }
+            document.getElementById('tw-result-wrap').style.display='block';
+            document.getElementById('tw-variant-btn').style.display='flex';
+          } catch(e) { if(e.message !== 'No API key set') alert('Error: '+e.message); }
+          loader('tw-loader', false);
+        }, 100);
+      };
+      list.appendChild(d);
+    });
+    document.getElementById('twcal-results').style.display = 'block';
+  } catch(e) { if(e.message !== 'No API key set') alert('Error: ' + e.message); }
+  loader('twcal-loader', false);
+}
+
+function clearTwCal() {
+  document.getElementById('twcal-niche').value = '';
+  document.getElementById('twcal-pillars').value = '';
+  document.getElementById('twcal-events').value = '';
+  document.getElementById('twcal-results').style.display = 'none';
+}
+
+// ── WHATSAPP STATE ───────────────────────────────────────────────────────
+S.wasType = 'motivational and energising, short punchy lines';
+S.wasTone = 'warm and relatable';
+S.wacType = 'product or feature announcement, exciting and clear';
+S.wchTone = 'warm and professional';
+S.lastWasText = '';
+S.lastWacText = '';
+
+// ── WA STATUS COMPOSER ───────────────────────────────────────────────────
+async function genWaStatus() {
+  const topic = document.getElementById('was-topic').value.trim();
+  if (!topic) { alert('Add a topic first.'); return; }
+  const ctx   = document.getElementById('was-ctx').value.trim();
+  const emoji = document.getElementById('was-emoji').value;
+  loader('was-loader', true);
+  try {
+    const text = await claude(
+`You are writing a WhatsApp status for a Nigerian professional.
+
+Topic: ${topic}
+Context: ${ctx || 'Lagos professional and founder'}
+Type: ${S.wasType}
+Tone: ${S.wasTone}
+Emoji rule: ${emoji}
+
+Rules:
+- Max 700 characters (WhatsApp status limit)
+- Write in a natural, human voice — not corporate
+- Short punchy lines work better than long paragraphs on mobile
+- Make it feel personal, not like a press release
+- If it's a business update, still sound like a real person, not a brand
+- Return ONLY the status text, nothing else`, 400);
+
+    S.lastWasText = text;
+    document.getElementById('was-out').textContent = text;
+    document.getElementById('was-out').classList.remove('empty');
+    document.getElementById('was-preview-text').textContent = text;
+    document.getElementById('was-char-count').textContent = text.length + ' / 700 chars';
+    document.getElementById('was-result').style.display = 'block';
+    document.getElementById('was-variant-btn').style.display = 'flex';
+  } catch(e) { if (e.message !== 'No API key set') alert('Error: ' + e.message); }
+  loader('was-loader', false);
+}
+
+async function genWaStatusVariant() {
+  const topic = document.getElementById('was-topic').value.trim() || 'my topic';
+  const ctx   = document.getElementById('was-ctx').value.trim();
+  const emoji = document.getElementById('was-emoji').value;
+  loader('was-loader', true);
+  try {
+    const text = await claude(
+`You are writing a DIFFERENT WhatsApp status on the same topic. Change the angle, structure, and opening line noticeably.
+
+Topic: ${topic}
+Context: ${ctx || 'Lagos professional'}
+Type: ${S.wasType}
+Tone: ${S.wasTone}
+Emoji rule: ${emoji}
+Max 700 chars. Natural Nigerian voice. Return ONLY the status text.`, 400);
+
+    S.lastWasText = text;
+    document.getElementById('was-out').textContent = text;
+    document.getElementById('was-preview-text').textContent = text;
+    document.getElementById('was-char-count').textContent = text.length + ' / 700 chars';
+  } catch(e) { if (e.message !== 'No API key set') alert('Error: ' + e.message); }
+  loader('was-loader', false);
+}
+
+function clearWaStatus() {
+  document.getElementById('was-topic').value = '';
+  document.getElementById('was-ctx').value = '';
+  document.getElementById('was-result').style.display = 'none';
+  document.getElementById('was-variant-btn').style.display = 'none';
+  S.lastWasText = '';
+}
+
+// ── WA CHANNEL BROADCAST ─────────────────────────────────────────────────
+async function genWaChannel() {
+  const name   = document.getElementById('wac-name').value.trim();
+  const topic  = document.getElementById('wac-topic').value.trim();
+  if (!topic) { alert('Add a topic first.'); return; }
+  const detail   = document.getElementById('wac-detail').value.trim();
+  const audience = document.getElementById('wac-audience').value.trim();
+  const cta      = document.getElementById('wac-cta').value.trim();
+  loader('wac-loader', true);
+  try {
+    const text = await claude(
+`You are writing a WhatsApp Channel broadcast post for a Nigerian business.
+
+Channel name: ${name || 'Business Channel'}
+Topic: ${topic}
+Post type: ${S.wacType}
+Key details: ${detail || 'none provided'}
+Audience: ${audience || 'Nigerian professionals and SME owners'}
+Call to action: ${cta || 'engage with this post'}
+
+Rules:
+- Write like a real person running a business, not a corporate PR team
+- Use clear formatting with line breaks — WhatsApp is a mobile app
+- Include 2–4 relevant emojis naturally placed, not crammed at the end
+- End with a clear, single CTA
+- Max 1000 characters
+- Return ONLY the post text, nothing else`, 600);
+
+    S.lastWacText = text;
+    document.getElementById('wac-out').textContent = text;
+    document.getElementById('wac-out').classList.remove('empty');
+    document.getElementById('wac-preview-body').textContent = text;
+    document.getElementById('wac-char-count').textContent = text.length + ' / 1000 chars';
+
+    // Update preview channel name/icon
+    const displayName = name || 'Business Channel';
+    document.getElementById('wac-preview-name').textContent = displayName;
+    document.getElementById('wac-preview-icon').textContent = displayName.charAt(0).toUpperCase();
+
+    document.getElementById('wac-result').style.display = 'block';
+  } catch(e) { if (e.message !== 'No API key set') alert('Error: ' + e.message); }
+  loader('wac-loader', false);
+}
+
+function clearWaChannel() {
+  document.getElementById('wac-name').value = '';
+  document.getElementById('wac-topic').value = '';
+  document.getElementById('wac-detail').value = '';
+  document.getElementById('wac-audience').value = '';
+  document.getElementById('wac-cta').value = '';
+  document.getElementById('wac-result').style.display = 'none';
+  S.lastWacText = '';
+}
+
+// ── WA CHAT ASSISTANT ────────────────────────────────────────────────────
+function parseConversation(raw, myName) {
+  const lines = raw.split('\n').filter(l => l.trim());
+  const messages = [];
+  const namePattern = /^\[?([^\]:]+)\]?:\s(.+)/;
+
+  // Also handle WhatsApp export format: "12/06/2024, 10:30 - Name: message"
+  const exportPattern = /^\d{1,2}\/\d{1,2}\/\d{2,4},?\s[\d:]+\s?[AP]?M?\s?-\s([^:]+):\s(.+)/i;
+
+  lines.forEach(line => {
+    const exportMatch = line.match(exportPattern);
+    const nameMatch   = line.match(namePattern);
+
+    if (exportMatch) {
+      messages.push({ sender: exportMatch[1].trim(), text: exportMatch[2].trim() });
+    } else if (nameMatch) {
+      messages.push({ sender: nameMatch[1].trim(), text: nameMatch[2].trim() });
+    } else if (messages.length > 0 && line.trim()) {
+      // continuation of previous message
+      messages[messages.length - 1].text += '\n' + line.trim();
+    }
+  });
+
+  return messages;
+}
+
+function renderChatBubbles(messages, myName) {
+  const container = document.getElementById('wch-messages');
+  container.innerHTML = '';
+
+  // Detect the "other" person's name
+  const others = [...new Set(messages.filter(m => m.sender.toLowerCase() !== myName.toLowerCase()).map(m => m.sender))];
+  const contactName = others[0] || 'Contact';
+
+  document.getElementById('wch-contact-name').textContent = contactName;
+  document.getElementById('wch-avatar').textContent = contactName.charAt(0).toUpperCase();
+
+  messages.forEach(msg => {
+    const isMe = msg.sender.toLowerCase() === myName.toLowerCase();
+    const wrap = document.createElement('div');
+    wrap.style.cssText = `display:flex;flex-direction:column;align-items:${isMe ? 'flex-end' : 'flex-start'};margin-bottom:4px`;
+
+    if (!isMe && messages.filter(m => m.sender !== myName).length > 1 && others.length > 1) {
+      const senderLabel = document.createElement('div');
+      senderLabel.className = 'wa-sender';
+      senderLabel.textContent = msg.sender;
+      wrap.appendChild(senderLabel);
+    }
+
+    const bubble = document.createElement('div');
+    bubble.className = 'wa-bubble ' + (isMe ? 'me' : 'them');
+    bubble.textContent = msg.text;
+
+    const time = document.createElement('div');
+    time.className = 'wa-time';
+    time.textContent = isMe ? '✓✓' : '';
+
+    wrap.appendChild(bubble);
+    wrap.appendChild(time);
+    container.appendChild(wrap);
+  });
+
+  // Scroll to bottom
+  setTimeout(() => container.scrollTop = container.scrollHeight, 50);
+  return contactName;
+}
+
+async function genWaReply() {
+  const raw    = document.getElementById('wch-convo').value.trim();
+  if (!raw) { alert('Paste a conversation first.'); return; }
+  const myName = document.getElementById('wch-myname').value.trim() || 'Me';
+  const ctx    = document.getElementById('wch-context').value;
+  const goal   = document.getElementById('wch-goal').value;
+
+  loader('wch-loader', true);
+  document.getElementById('wch-result').style.display = 'none';
+
+  try {
+    // Parse and render chat
+    const messages   = parseConversation(raw, myName);
+    const contactName = renderChatBubbles(messages, myName);
+
+    // Format for Claude
+    const convoText = messages.map(m => `${m.sender}: ${m.text}`).join('\n');
+
+    const aiRaw = await claude(
+`You are a WhatsApp messaging assistant for a Nigerian professional.
+
+CONVERSATION:
+${convoText}
+
+My name in this chat: ${myName}
+Context: ${ctx}
+Goal: ${goal}
+Tone: ${S.wchTone}
+
+Analyse the conversation and return ONLY valid JSON:
+{
+  "summary": "1-2 sentence summary of what this conversation is about and where it stands",
+  "last_message": "what the other person last said or asked",
+  "replies": [
+    "Reply option 1 — fully written WhatsApp message, natural and human",
+    "Reply option 2 — different approach, angle, or length",
+    "Reply option 3 — third distinct option"
+  ]
+}
+
+Rules for each reply:
+- Sound like a real Nigerian professional, not a bot
+- Match the tone: ${S.wchTone}
+- Serve the goal: ${goal}
+- Use WhatsApp-appropriate language (informal but clear)
+- Max 300 characters per reply unless the context requires more
+- No hollow phrases like "I hope this message finds you well"
+- Return ONLY the JSON, no markdown`, 800);
+
+    let data;
+    try { data = JSON.parse(aiRaw); }
+    catch(e) { const m = aiRaw.match(/\{[\s\S]+\}/); if (m) data = JSON.parse(m[0]); else throw new Error('Parse failed'); }
+
+    // Render summary
+    document.getElementById('wch-summary').textContent = '💬 ' + (data.summary || '');
+
+    // Render reply options
+    const repContainer = document.getElementById('wch-replies');
+    repContainer.innerHTML = '';
+    (data.replies || []).forEach((r, i) => {
+      const d = document.createElement('div');
+      d.className = 'ai-reply-opt';
+      d.innerHTML = `
+        <div class="ai-reply-opt-num">Option ${i + 1}</div>
+        <div id="wa-rep-${i}" style="font-size:13px;line-height:1.7;padding-right:55px">${r}</div>
+        <button class="ai-reply-copy" onclick="useWaReply(${i})">Use this</button>`;
+      repContainer.appendChild(d);
+    });
+
+    document.getElementById('wch-result').style.display = 'block';
+  } catch(e) { if (e.message !== 'No API key set') alert('Error: ' + e.message); }
+  loader('wch-loader', false);
+}
+
+function useWaReply(i) {
+  const text = document.getElementById('wa-rep-' + i)?.textContent || '';
+  // Put in the input bar so user can tweak before copying
+  document.getElementById('wch-reply-input').value = text;
+
+  // Also add it as an AI suggestion bubble in the chat window
+  const container = document.getElementById('wch-messages');
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;flex-direction:column;align-items:flex-end;margin-bottom:4px';
+  const bubble = document.createElement('div');
+  bubble.className = 'wa-bubble ai-suggestion';
+  bubble.textContent = '✨ ' + text;
+  const hint = document.createElement('div');
+  hint.className = 'wa-time';
+  hint.textContent = 'AI suggestion — copy to WhatsApp';
+  wrap.appendChild(bubble);
+  wrap.appendChild(hint);
+  container.appendChild(wrap);
+  setTimeout(() => container.scrollTop = container.scrollHeight, 50);
+
+  // Copy to clipboard
+  navigator.clipboard.writeText(text).catch(() => {});
+  const btn = document.querySelectorAll('.ai-reply-copy')[i];
+  if (btn) { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Use this', 1500); }
+}
+
+function sendManualReply() {
+  const input = document.getElementById('wch-reply-input');
+  const text  = input.value.trim();
+  if (!text) return;
+  const container = document.getElementById('wch-messages');
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;flex-direction:column;align-items:flex-end;margin-bottom:4px';
+  const bubble = document.createElement('div');
+  bubble.className = 'wa-bubble me';
+  bubble.textContent = text;
+  const time = document.createElement('div');
+  time.className = 'wa-time';
+  time.textContent = '✓✓';
+  wrap.appendChild(bubble);
+  wrap.appendChild(time);
+  container.appendChild(wrap);
+  input.value = '';
+  setTimeout(() => container.scrollTop = container.scrollHeight, 50);
+}
+
+function clearWaChat() {
+  document.getElementById('wch-convo').value = '';
+  document.getElementById('wch-myname').value = '';
+  document.getElementById('wch-result').style.display = 'none';
+  document.getElementById('wch-messages').innerHTML = '';
+  document.getElementById('wch-replies').innerHTML = '';
+  document.getElementById('wch-reply-input').value = '';
 }
 </script>
 </body>
