@@ -27,15 +27,17 @@ exports.handler = async (event) => {
       };
     }
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    // OpenRouter API — supports Claude + 100s of other models
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
+        'Authorization': `Bearer ${apiKey}`,
+        'HTTP-Referer': 'https://yesterdaylink.netlify.app',
+        'X-Title': 'LinkedIn AI Command Centre',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
+        model: 'anthropic/claude-sonnet-4-5',
         max_tokens,
         messages: [{ role: 'user', content: prompt }],
       }),
@@ -43,14 +45,29 @@ exports.handler = async (event) => {
 
     const data = await response.json();
 
+    // OpenRouter returns OpenAI-style response — normalise to Anthropic format
+    // so the frontend doesn't need to change at all
+    if (data.error) {
+      return {
+        statusCode: response.status,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+        body: JSON.stringify({ error: { message: data.error.message || 'OpenRouter error' } }),
+      };
+    }
+
+    const normalized = {
+      content: [{ type: 'text', text: data.choices?.[0]?.message?.content || '' }],
+    };
+
     return {
-      statusCode: response.status,
+      statusCode: 200,
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(normalized),
     };
+
   } catch (err) {
     return {
       statusCode: 500,
