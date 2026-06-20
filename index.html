@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LinkedIn AI Command Centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & tokens ─────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0D0E12;
+  --surface:   #13151C;
+  --card:      #1A1D27;
+  --border:    #252836;
+  --border-hi: #353850;
+  --li:        #0A66C2;
+  --li-dim:    #0854A0;
+  --li-glow:   rgba(10,102,194,0.18);
+  --text:      #E4E6F0;
+  --muted:     #8891AA;
+  --faint:     #454C65;
+  --success:   #22C55E;
+  --warn:      #F59E0B;
+  --danger:    #EF4444;
+  --mono:      'JetBrains Mono', monospace;
+  --sans:      'Inter', system-ui, sans-serif;
+  --radius:    10px;
+  --radius-sm: 6px;
+}
+
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; line-height: 1.6; }
+
+/* ── Layout shell ───────────────────────────────────── */
+.app { display: grid; grid-template-columns: 220px 1fr; grid-template-rows: 56px 1fr; height: 100vh; overflow: hidden; }
+
+/* ── Topbar ─────────────────────────────────────────── */
+.topbar {
+  grid-column: 1 / -1;
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 20px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.topbar-logo {
+  width: 30px; height: 30px; border-radius: 7px;
+  background: var(--li); display: flex; align-items: center; justify-content: center;
+}
+.topbar-logo svg { width: 18px; height: 18px; fill: #fff; }
+.topbar-title { font-size: 15px; font-weight: 600; color: var(--text); letter-spacing: -0.01em; }
+.topbar-sub { font-size: 12px; color: var(--muted); }
+.topbar-divider { flex: 1; }
+.api-badge {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--muted);
+  padding: 5px 11px; border-radius: 20px;
+  background: var(--card); border: 1px solid var(--border);
+}
+.api-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); flex-shrink: 0; }
+#api-key-btn {
+  font-size: 12px; padding: 6px 14px; border-radius: var(--radius-sm);
+  background: var(--li); color: #fff; border: none; cursor: pointer;
+  font-family: var(--sans); font-weight: 500; margin-left: 8px;
+  transition: background .15s;
+}
+#api-key-btn:hover { background: var(--li-dim); }
+
+/* ── Sidebar ─────────────────────────────────────────── */
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 16px 10px;
+  overflow-y: auto;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.nav-section-label {
+  font-size: 10px; font-weight: 600; color: var(--faint);
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 10px 8px 4px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: var(--radius-sm);
+  cursor: pointer; color: var(--muted); font-size: 13px; font-weight: 400;
+  transition: all .15s; border: 1px solid transparent;
+  user-select: none;
+}
+.nav-item:hover { background: var(--card); color: var(--text); }
+.nav-item.active { background: var(--li-glow); color: #60A5FA; border-color: rgba(10,102,194,0.35); font-weight: 500; }
+.nav-icon { width: 18px; height: 18px; flex-shrink: 0; }
+.nav-spacer { flex: 1; }
+.nav-item-sub { font-size: 10px; color: var(--faint); margin-top: 1px; }
+
+/* ── Main content ────────────────────────────────────── */
+.main { overflow-y: auto; padding: 28px 32px; display: flex; flex-direction: column; gap: 24px; }
+.pane { display: none; flex-direction: column; gap: 20px; }
+.pane.active { display: flex; }
+
+/* ── Page header ─────────────────────────────────────── */
+.page-header { display: flex; align-items: flex-start; gap: 14px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+.page-icon {
+  width: 42px; height: 42px; border-radius: 10px;
+  background: var(--li-glow); border: 1px solid rgba(10,102,194,0.4);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.page-icon svg { width: 20px; height: 20px; stroke: #60A5FA; fill: none; }
+.page-header h2 { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 3px; letter-spacing: -0.02em; }
+.page-header p { font-size: 13px; color: var(--muted); }
+
+/* ── Cards ───────────────────────────────────────────── */
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
+.card-label { font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.card-label svg { width: 14px; height: 14px; stroke: var(--faint); flex-shrink: 0; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+/* ── Form elements ───────────────────────────────────── */
+label.field-label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 7px; }
+input[type=text], select, textarea {
+  width: 100%; background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text); font-family: var(--sans);
+  font-size: 13px; padding: 9px 12px; outline: none;
+  transition: border-color .15s;
+}
+input[type=text]:focus, select:focus, textarea:focus { border-color: var(--li); }
+textarea { resize: vertical; min-height: 100px; line-height: 1.7; }
+select { appearance: none; cursor: pointer; }
+select option { background: var(--card); }
+::placeholder { color: var(--faint); }
+
+/* ── Chip selectors ──────────────────────────────────── */
+.chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 4px; }
+.chip {
+  font-size: 12px; padding: 5px 13px; border-radius: 20px;
+  border: 1px solid var(--border); background: none;
+  color: var(--muted); cursor: pointer; font-family: var(--sans);
+  transition: all .12s;
+}
+.chip:hover { border-color: var(--border-hi); color: var(--text); }
+.chip.active { background: var(--li-glow); color: #60A5FA; border-color: rgba(10,102,194,0.5); font-weight: 500; }
+
+/* ── Buttons ─────────────────────────────────────────── */
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 18px; border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 500; font-family: var(--sans);
+  cursor: pointer; border: 1px solid transparent; transition: all .15s;
+}
+.btn-primary { background: var(--li); color: #fff; }
+.btn-primary:hover { background: var(--li-dim); }
+.btn-ghost { background: none; color: var(--muted); border-color: var(--border); }
+.btn-ghost:hover { background: var(--surface); color: var(--text); border-color: var(--border-hi); }
+.btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; flex-shrink: 0; }
+.btn-sm { padding: 5px 11px; font-size: 12px; }
+
+/* ── Output area ─────────────────────────────────────── */
+.output-wrap { position: relative; }
+.output {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 14px 16px;
+  font-size: 13px; line-height: 1.8; color: var(--text);
+  min-height: 90px; white-space: pre-wrap;
+}
+.output.empty { color: var(--faint); font-style: italic; }
+.output-actions {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 8px;
+}
+.copy-btn {
+  display: flex; align-items: center; gap: 5px; font-size: 11px;
+  padding: 5px 10px; border-radius: var(--radius-sm);
+  background: var(--card); border: 1px solid var(--border);
+  color: var(--muted); cursor: pointer; font-family: var(--sans);
+  transition: all .12s;
+}
+.copy-btn:hover { color: var(--text); border-color: var(--border-hi); }
+.copy-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; }
+
+/* ── Character ring (post composer signature) ────────── */
+.char-ring-wrap { display: flex; align-items: center; gap: 10px; }
+.char-ring { position: relative; width: 40px; height: 40px; flex-shrink: 0; }
+.char-ring svg { width: 40px; height: 40px; transform: rotate(-90deg); }
+.char-ring circle.track { fill: none; stroke: var(--border); stroke-width: 3; }
+.char-ring circle.fill { fill: none; stroke: var(--li); stroke-width: 3; stroke-linecap: round; transition: stroke-dashoffset .3s ease, stroke .3s; }
+.char-ring-num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; color: var(--muted); font-family: var(--mono); }
+
+/* ── Loading spinner ─────────────────────────────────── */
+.loader { display: none; align-items: center; gap: 9px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.loader.on { display: flex; }
+.spinner { width: 14px; height: 14px; border: 2px solid var(--border-hi); border-top-color: var(--li); border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Stat cards ──────────────────────────────────────── */
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; text-align: center; }
+.stat-n { font-size: 24px; font-weight: 600; color: var(--text); font-family: var(--mono); }
+.stat-l { font-size: 11px; color: var(--muted); margin-top: 3px; letter-spacing: 0.04em; }
+
+/* ── Alert bar ───────────────────────────────────────── */
+.alert { display: flex; gap: 10px; align-items: flex-start; padding: 11px 14px; border-radius: var(--radius-sm); font-size: 12px; }
+.alert svg { width: 15px; height: 15px; stroke: currentColor; fill: none; flex-shrink: 0; margin-top: 1px; }
+.alert-warn { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.25); color: #F59E0B; }
+.alert-info { background: var(--li-glow); border: 1px solid rgba(10,102,194,.3); color: #60A5FA; }
+
+/* ── Insight cards ───────────────────────────────────── */
+.insight { background: var(--surface); border: 1px solid var(--border); border-left: 2px solid var(--li); border-radius: var(--radius-sm); padding: 11px 14px; font-size: 13px; line-height: 1.7; color: var(--text); margin-bottom: 8px; }
+.insight-title { font-weight: 600; font-size: 13px; margin-bottom: 4px; color: var(--text); }
+.insight-sub { font-size: 12px; color: var(--muted); }
+.insight-clickable { cursor: pointer; transition: background .12s; }
+.insight-clickable:hover { background: var(--card); border-color: var(--border-hi); }
+
+/* ── Comment cards ───────────────────────────────────── */
+.comment-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; position: relative; }
+.comment-num { font-size: 10px; font-weight: 600; color: var(--li); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+.comment-text { font-size: 13px; line-height: 1.8; color: var(--text); padding-right: 60px; }
+.comment-copy { position: absolute; top: 12px; right: 12px; }
+
+/* ── Calendar ────────────────────────────────────────── */
+.cal-week-label { font-size: 11px; font-weight: 600; color: var(--faint); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; margin-top: 14px; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.cal-day-hdr { font-size: 10px; font-weight: 600; color: var(--faint); text-align: center; padding: 4px 0; letter-spacing: 0.05em; text-transform: uppercase; }
+.cal-cell { min-height: 80px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px; font-size: 11px; }
+.cal-cell.has-post { border-color: rgba(10,102,194,0.4); }
+.cal-cell.today { border-color: var(--li); background: var(--li-glow); }
+.cal-date { color: var(--faint); font-weight: 600; margin-bottom: 5px; }
+.cal-cell.today .cal-date { color: #60A5FA; }
+.cal-post-chip {
+  background: var(--card); border: 1px solid rgba(10,102,194,0.4);
+  border-left: 2px solid var(--li); border-radius: 4px;
+  padding: 4px 6px; font-size: 10px; line-height: 1.4;
+  color: var(--text); cursor: pointer; margin-bottom: 4px;
+  transition: background .12s;
+}
+.cal-post-chip:hover { background: var(--li-glow); }
+.cal-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.cal-list-item {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 12px 14px;
+  cursor: pointer; transition: border-color .12s;
+}
+.cal-list-item:hover { border-color: var(--border-hi); }
+.cal-list-date { min-width: 72px; font-size: 11px; color: var(--muted); padding-top: 2px; font-family: var(--mono); }
+.cal-list-body { flex: 1; }
+.cal-list-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+.cal-list-meta { font-size: 11px; color: var(--faint); }
+.cal-list-hook { font-size: 12px; color: var(--muted); font-style: italic; margin-top: 4px; }
+.cal-draft-btn { font-size: 11px; color: #60A5FA; white-space: nowrap; padding-top: 2px; }
+
+/* ── Seg tabs ────────────────────────────────────────── */
+.seg-tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+.seg-tab { font-size: 12px; padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border); background: none; color: var(--muted); cursor: pointer; font-family: var(--sans); transition: all .12s; }
+.seg-tab.active { background: var(--li-glow); color: #60A5FA; border-color: rgba(10,102,194,.4); font-weight: 500; }
+.seg-pane { display: none; }
+.seg-pane.active { display: block; }
+
+/* ── Field group ─────────────────────────────────────── */
+.field-group { display: flex; flex-direction: column; gap: 14px; }
+.field { display: flex; flex-direction: column; }
+
+/* ── API modal ───────────────────────────────────────── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 100; display: flex; align-items: center; justify-content: center; }
+.modal { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 28px; width: 480px; max-width: 94vw; }
+.modal h3 { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.modal p { font-size: 13px; color: var(--muted); margin-bottom: 18px; line-height: 1.6; }
+.modal-footer { display: flex; gap: 8px; margin-top: 18px; }
+
+/* ── Scrollbar ───────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-hi); }
+
+/* ── Responsive ──────────────────────────────────────── */
+@media (max-width: 768px) {
+  .app { grid-template-columns: 1fr; grid-template-rows: 56px auto 1fr; }
+  .sidebar { flex-direction: row; flex-wrap: wrap; overflow-x: auto; padding: 8px; border-right: none; border-bottom: 1px solid var(--border); gap: 4px; }
+  .nav-section-label { display: none; }
+  .nav-item { padding: 7px 10px; font-size: 12px; }
+  .main { padding: 18px 16px; }
+  .grid-2 { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- API Key Modal -->
+<div class="modal-overlay" id="modal" style="display:none">
+  <div class="modal">
+    <h3>Connect Anthropic API</h3>
+    <p>Enter your Anthropic API key to enable Claude-powered features. Your key is stored locally in your browser and never sent anywhere except the Anthropic API.</p>
+    <div class="field">
+      <label class="field-label">API Key</label>
+      <input type="text" id="api-key-input" placeholder="sk-ant-..." autocomplete="off">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="saveKey()">
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+        Save key
+      </button>
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+    </div>
+    <p style="font-size:11px;color:var(--faint);margin-top:14px;margin-bottom:0">Get your key at <a href="https://console.anthropic.com" style="color:var(--li)">console.anthropic.com</a></p>
+  </div>
+</div>
+
+<div class="app">
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="topbar-logo">
+    <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+  </div>
+  <div>
+    <div class="topbar-title">LinkedIn AI Command Centre</div>
+    <div class="topbar-sub">Powered by Claude</div>
+  </div>
+  <div class="topbar-divider"></div>
+  <div class="api-badge"><span class="api-dot" id="api-dot"></span><span id="api-status">No key set</span></div>
+  <button id="api-key-btn" onclick="openModal()">Set API key</button>
+</header>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="nav-section-label">Tools</div>
+  <div class="nav-item active" onclick="navigate('post', this)">
+    <svg class="nav-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+    <div>
+      <div>Post composer</div>
+      <div class="nav-item-sub">Write & format posts</div>
+    </div>
+  </div>
+  <div class="nav-item" onclick="navigate('feed', this)">
+    <svg class="nav-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M4 11a9 9 0 019 9M4 4a16 16 0 0116 16M5 19a1 1 0 110-2 1 1 0 010 2z"/></svg>
+    <div>
+      <div>Feed analyser</div>
+      <div class="nav-item-sub">Summarise & extract insights</div>
+    </div>
+  </div>
+  <div class="nav-item" onclick="navigate('comment', this)">
+    <svg class="nav-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    <div>
+      <div>Comment engine</div>
+      <div class="nav-item-sub">Generate smart comments</div>
+    </div>
+  </div>
+  <div class="nav-item" onclick="navigate('calendar', this)">
+    <svg class="nav-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+    <div>
+      <div>Content calendar</div>
+      <div class="nav-item-sub">Plan 2-week schedules</div>
+    </div>
+  </div>
+  <div class="nav-spacer"></div>
+  <div class="nav-section-label">Saved</div>
+  <div class="nav-item" onclick="navigate('saved', this)">
+    <svg class="nav-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+    <div>
+      <div>Saved posts</div>
+      <div class="nav-item-sub" id="saved-count-label">0 drafts</div>
+    </div>
+  </div>
+</nav>
+
+<!-- Main -->
+<main class="main">
+
+  <!-- ── POST COMPOSER ─────────────────────────────── -->
+  <section class="pane active" id="pane-post">
+    <div class="page-header">
+      <div class="page-icon">
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      </div>
+      <div>
+        <h2>Post composer</h2>
+        <p>Describe your idea. Claude writes a scroll-stopping post in your voice.</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">Topic or idea</label>
+        <input type="text" id="post-topic" placeholder="e.g. What building Konnekt.ng taught me about distribution">
+      </div>
+      <div class="field">
+        <label class="field-label">Your context</label>
+        <input type="text" id="post-ctx" placeholder="e.g. Lagos-based founder, 3 SaaS products">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">
+        <svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        Post format
+      </div>
+      <div class="chips" id="fmt-chips">
+        <button class="chip active" data-val="storytelling hook — personal journey with a lesson">Story</button>
+        <button class="chip" data-val="punchy numbered listicle with bold takeaways">Listicle</button>
+        <button class="chip" data-val="bold contrarian opinion or hot take with a supporting argument">Hot take</button>
+        <button class="chip" data-val="practical step-by-step tips the reader can use today">Tips</button>
+        <button class="chip" data-val="thread starter with a cliffhanger that pulls people into comments">Thread</button>
+        <button class="chip" data-val="personal win or milestone, shared with humility and a lesson">Win / milestone</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">
+        <svg viewBox="0 0 24 24" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
+        Tone
+      </div>
+      <div class="chips" id="tone-chips">
+        <button class="chip active" data-val="authentic and direct, Nigerian founder voice">Authentic</button>
+        <button class="chip" data-val="professional and polished, business leader voice">Professional</button>
+        <button class="chip" data-val="conversational and warm, like talking to a friend">Conversational</button>
+        <button class="chip" data-val="bold and unapologetic, confident stance">Bold</button>
+        <button class="chip" data-val="humble and reflective, sharing honest lessons">Humble</button>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">Hashtags (optional)</label>
+        <input type="text" id="post-tags" placeholder="#startups #Nigeria #SaaS">
+      </div>
+      <div class="field">
+        <label class="field-label">Target audience</label>
+        <input type="text" id="post-audience" placeholder="e.g. founders, PMs, African tech community">
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="genPost()">
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Generate post
+      </button>
+      <button class="btn btn-ghost" onclick="genVariant()" id="variant-btn" style="display:none">
+        <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        Different angle
+      </button>
+      <button class="btn btn-ghost" onclick="clearPost()">Clear</button>
+    </div>
+    <div class="loader" id="post-loader"><div class="spinner"></div> Writing your post...</div>
+
+    <div id="post-result-wrap" style="display:none">
+      <div class="card">
+        <div class="card-label">
+          <svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Your post — ready to copy into LinkedIn
+        </div>
+        <div class="output" id="post-out"></div>
+        <div class="output-actions">
+          <div class="char-ring-wrap">
+            <div class="char-ring">
+              <svg viewBox="0 0 40 40">
+                <circle class="track" cx="20" cy="20" r="17"/>
+                <circle class="fill" id="char-ring-fill" cx="20" cy="20" r="17" stroke-dasharray="107" stroke-dashoffset="107"/>
+              </svg>
+              <div class="char-ring-num" id="char-ring-num">0</div>
+            </div>
+            <span style="font-size:11px;color:var(--muted)" id="char-count-label">0 / 3000</span>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="copy-btn" onclick="copyEl('post-out',this)">
+              <svg viewBox="0 0 24 24" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              Copy post
+            </button>
+            <button class="copy-btn" onclick="savePost()">
+              <svg viewBox="0 0 24 24" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Save draft
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FEED ANALYSER ─────────────────────────────── -->
+  <section class="pane" id="pane-feed">
+    <div class="page-header">
+      <div class="page-icon">
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M4 11a9 9 0 019 9M4 4a16 16 0 0116 16M5 19a1 1 0 110-2 1 1 0 010 2z"/></svg>
+      </div>
+      <div>
+        <h2>Feed analyser</h2>
+        <p>Paste your copied LinkedIn feed. Claude extracts topics, insights, and posts worth engaging with.</p>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+      <span>Scroll your LinkedIn feed, select all visible text, copy it, and paste below. Messy text is fine — Claude will parse it.</span>
+    </div>
+
+    <div class="grid-3">
+      <div class="stat-card"><div class="stat-n" id="stat-posts">—</div><div class="stat-l">Posts detected</div></div>
+      <div class="stat-card"><div class="stat-n" id="stat-topics">—</div><div class="stat-l">Topics found</div></div>
+      <div class="stat-card"><div class="stat-n" id="stat-ideas">—</div><div class="stat-l">Post ideas</div></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">Pasted feed content</label>
+        <textarea id="feed-in" style="min-height:140px" placeholder="Paste your copied LinkedIn feed text here..."></textarea>
+      </div>
+      <div class="field-group">
+        <div class="field">
+          <label class="field-label">Your focus area</label>
+          <input type="text" id="feed-focus" placeholder="e.g. Nigerian tech, AI, SaaS, fintech">
+        </div>
+        <div class="field">
+          <label class="field-label">What you want from this analysis</label>
+          <select id="feed-goal">
+            <option value="general intelligence briefing">General briefing</option>
+            <option value="posts to engage with and comment on">Find posts to engage</option>
+            <option value="content ideas for my own posts">Generate post ideas</option>
+            <option value="competitive and market intelligence">Market intelligence</option>
+          </select>
+        </div>
+        <div class="btn-row" style="margin-top:auto">
+          <button class="btn btn-primary" onclick="genFeed()">
+            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Analyse feed
+          </button>
+          <button class="btn btn-ghost" onclick="clearFeed()">Clear</button>
+        </div>
+        <div class="loader" id="feed-loader"><div class="spinner"></div> Analysing feed...</div>
+      </div>
+    </div>
+
+    <div id="feed-results" style="display:none">
+      <div class="seg-tabs">
+        <button class="seg-tab active" onclick="showSeg('feed','insights',this)">Key insights</button>
+        <button class="seg-tab" onclick="showSeg('feed','engage',this)">Engage with</button>
+        <button class="seg-tab" onclick="showSeg('feed','ideas',this)">Post ideas</button>
+        <button class="seg-tab" onclick="showSeg('feed','briefing',this)">Full briefing</button>
+      </div>
+      <div class="seg-pane active" id="feed-seg-insights"></div>
+      <div class="seg-pane" id="feed-seg-engage"></div>
+      <div class="seg-pane" id="feed-seg-ideas"></div>
+      <div class="seg-pane" id="feed-seg-briefing">
+        <div class="output-wrap">
+          <div class="output" id="feed-briefing-out"></div>
+          <div class="output-actions" style="margin-top:8px">
+            <span></span>
+            <button class="copy-btn" onclick="copyEl('feed-briefing-out',this)">
+              <svg viewBox="0 0 24 24" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              Copy
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── COMMENT ENGINE ────────────────────────────── -->
+  <section class="pane" id="pane-comment">
+    <div class="page-header">
+      <div class="page-icon">
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      </div>
+      <div>
+        <h2>Comment engine</h2>
+        <p>Paste any LinkedIn post. Claude writes 3 distinct, non-generic comments in your voice.</p>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">LinkedIn post to comment on</label>
+      <textarea id="cmt-post" style="min-height:120px" placeholder="Paste the full text of the post you want to comment on..."></textarea>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">Your context</label>
+        <input type="text" id="cmt-ctx" placeholder="e.g. founder building digital products in Lagos">
+      </div>
+      <div class="field">
+        <label class="field-label">Comment goal</label>
+        <select id="cmt-goal">
+          <option value="add a specific insight or useful data point">Add insight</option>
+          <option value="ask a genuinely curious follow-up question">Ask a question</option>
+          <option value="share a directly related personal experience">Share experience</option>
+          <option value="respectfully challenge or offer a counterpoint">Challenge / pushback</option>
+          <option value="agree and extend the argument with a new angle">Agree and extend</option>
+          <option value="connect the post to something happening in the Nigerian market">Nigerian market angle</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">
+        <svg viewBox="0 0 24 24" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
+        Comment tone
+      </div>
+      <div class="chips" id="ctone-chips">
+        <button class="chip active" data-val="thoughtful and insightful">Thoughtful</button>
+        <button class="chip" data-val="warm and genuinely supportive">Warm</button>
+        <button class="chip" data-val="witty and sharp, with a light edge">Witty</button>
+        <button class="chip" data-val="expert and authoritative, confident in the knowledge">Expert</button>
+        <button class="chip" data-val="humble and reflective, learning stance">Humble</button>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="genComments()">
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Generate 3 comments
+      </button>
+      <button class="btn btn-ghost" onclick="clearComments()">Clear</button>
+    </div>
+    <div class="loader" id="cmt-loader"><div class="spinner"></div> Crafting your comments...</div>
+
+    <div id="cmt-results" style="display:none"></div>
+  </section>
+
+  <!-- ── CONTENT CALENDAR ──────────────────────────── -->
+  <section class="pane" id="pane-calendar">
+    <div class="page-header">
+      <div class="page-icon">
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      </div>
+      <div>
+        <h2>Content calendar</h2>
+        <p>2-week posting plan tailored to your niche. Click any post to draft it instantly.</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">Your niche / industry</label>
+        <input type="text" id="cal-niche" placeholder="e.g. Nigerian tech, SaaS, digital products, fintech">
+      </div>
+      <div class="field">
+        <label class="field-label">Posts per week</label>
+        <select id="cal-freq">
+          <option value="2">2 per week — sustainable pace</option>
+          <option value="3" selected>3 per week — recommended</option>
+          <option value="5">5 per week — daily posting</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">Content pillars</label>
+        <input type="text" id="cal-pillars" placeholder="e.g. founder journey, product lessons, Nigerian market, tools">
+      </div>
+      <div class="field">
+        <label class="field-label">Upcoming events / launches</label>
+        <input type="text" id="cal-events" placeholder="e.g. Konnekt v2 launch next Tuesday, investor pitch Friday">
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="genCalendar()">
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Generate 2-week calendar
+      </button>
+      <button class="btn btn-ghost" onclick="clearCal()">Clear</button>
+    </div>
+    <div class="loader" id="cal-loader"><div class="spinner"></div> Planning your calendar...</div>
+
+    <div id="cal-results" style="display:none">
+      <div class="seg-tabs">
+        <button class="seg-tab active" onclick="showSeg('cal','grid',this)">Calendar view</button>
+        <button class="seg-tab" onclick="showSeg('cal','list',this)">List view</button>
+      </div>
+      <div class="seg-pane active" id="cal-seg-grid">
+        <div class="cal-week-label">Week 1</div>
+        <div class="cal-grid" id="cal-grid-w1">
+          <div class="cal-day-hdr">Mon</div><div class="cal-day-hdr">Tue</div><div class="cal-day-hdr">Wed</div>
+          <div class="cal-day-hdr">Thu</div><div class="cal-day-hdr">Fri</div><div class="cal-day-hdr">Sat</div><div class="cal-day-hdr">Sun</div>
+        </div>
+        <div class="cal-week-label">Week 2</div>
+        <div class="cal-grid" id="cal-grid-w2">
+          <div class="cal-day-hdr">Mon</div><div class="cal-day-hdr">Tue</div><div class="cal-day-hdr">Wed</div>
+          <div class="cal-day-hdr">Thu</div><div class="cal-day-hdr">Fri</div><div class="cal-day-hdr">Sat</div><div class="cal-day-hdr">Sun</div>
+        </div>
+      </div>
+      <div class="seg-pane" id="cal-seg-list">
+        <div class="cal-list" id="cal-list-items"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SAVED POSTS ───────────────────────────────── -->
+  <section class="pane" id="pane-saved">
+    <div class="page-header">
+      <div class="page-icon">
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      </div>
+      <div>
+        <h2>Saved drafts</h2>
+        <p>Posts you've saved from the composer. Copy and paste directly into LinkedIn.</p>
+      </div>
+    </div>
+    <div id="saved-list"><div style="color:var(--faint);font-size:13px;padding:20px 0">No saved drafts yet. Generate a post and click "Save draft."</div></div>
+  </section>
+
+</main>
+</div>
+
+<script>
+// ── State ───────────────────────────────────────────────────────────────
+const S = {
+  apiKey: localStorage.getItem('li_apikey') || '',
+  fmt: 'storytelling hook — personal journey with a lesson',
+  tone: 'authentic and direct, Nigerian founder voice',
+  ctone: 'thoughtful and insightful',
+  lastTopic: '',
+  lastPostText: '',
+  calPosts: [],
+  saved: JSON.parse(localStorage.getItem('li_saved') || '[]'),
+};
+updateApiUI();
+renderSaved();
+
+// ── Navigation ──────────────────────────────────────────────────────────
+function navigate(name, el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('pane-' + name).classList.add('active');
+}
+
+// ── Chip selectors ──────────────────────────────────────────────────────
+document.querySelectorAll('.chips').forEach(group => {
+  const key = group.id === 'fmt-chips' ? 'fmt' : group.id === 'tone-chips' ? 'tone' : 'ctone';
+  group.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      S[key] = chip.dataset.val;
+    });
+  });
+});
+
+// ── Seg tabs ────────────────────────────────────────────────────────────
+function showSeg(prefix, name, el) {
+  const container = el.closest('section') || document;
+  container.querySelectorAll('.seg-tab').forEach(t => t.classList.remove('active'));
+  container.querySelectorAll('.seg-pane').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  const pane = document.getElementById(prefix + '-seg-' + name);
+  if (pane) pane.classList.add('active');
+}
+
+// ── API key ─────────────────────────────────────────────────────────────
+function openModal() { document.getElementById('modal').style.display = 'flex'; document.getElementById('api-key-input').value = S.apiKey; }
+function closeModal() { document.getElementById('modal').style.display = 'none'; }
+function saveKey() {
+  const k = document.getElementById('api-key-input').value.trim();
+  if (!k) return;
+  S.apiKey = k;
+  localStorage.setItem('li_apikey', k);
+  updateApiUI();
+  closeModal();
+}
+function updateApiUI() {
+  const set = !!S.apiKey;
+  document.getElementById('api-dot').style.background = set ? '#22C55E' : '#EF4444';
+  document.getElementById('api-status').textContent = set ? 'API key set' : 'No key set';
+  document.getElementById('api-key-btn').textContent = set ? 'Change key' : 'Set API key';
+}
+
+// ── Claude call ─────────────────────────────────────────────────────────
+async function claude(prompt, max = 1200) {
+  if (!S.apiKey) { openModal(); throw new Error('No API key set'); }
+  const r = await fetch('/api/claude', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': S.apiKey },
+    body: JSON.stringify({ prompt, max_tokens: max })
+  });
+  const d = await r.json();
+  if (d.error) throw new Error(d.error.message);
+  return d.content?.[0]?.text || '';
+}
+
+function loader(id, on) { document.getElementById(id).classList.toggle('on', on); }
+
+// ── Clipboard ───────────────────────────────────────────────────────────
+function copyEl(id, btn) {
+  const text = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(text).catch(() => {});
+  if (btn) { const orig = btn.innerHTML; btn.innerHTML = btn.innerHTML.replace(/Copy.*/, 'Copied!'); setTimeout(() => btn.innerHTML = orig, 1600); }
+}
+
+// ── Character ring ──────────────────────────────────────────────────────
+function updateCharRing(text) {
+  const len = text.length;
+  const max = 3000;
+  const circ = 107;
+  const pct = Math.min(len / max, 1);
+  const offset = circ - pct * circ;
+  const fill = document.getElementById('char-ring-fill');
+  const num = document.getElementById('char-ring-num');
+  const label = document.getElementById('char-count-label');
+  if (!fill) return;
+  fill.style.strokeDashoffset = offset;
+  fill.style.stroke = len > 2700 ? '#EF4444' : len > 2000 ? '#F59E0B' : '#0A66C2';
+  num.textContent = len > 999 ? Math.round(len / 100) / 10 + 'k' : len;
+  label.textContent = len + ' / 3000 chars';
+  label.style.color = len > 2700 ? '#EF4444' : 'var(--muted)';
+}
+
+// ── POST COMPOSER ───────────────────────────────────────────────────────
+async function genPost() {
+  const topic = document.getElementById('post-topic').value.trim();
+  if (!topic) { alert('Add a topic first.'); return; }
+  const ctx = document.getElementById('post-ctx').value.trim();
+  const tags = document.getElementById('post-tags').value.trim();
+  const audience = document.getElementById('post-audience').value.trim();
+  S.lastTopic = topic;
+  loader('post-loader', true);
+  try {
+    const text = await claude(
+`You are a LinkedIn ghostwriter for a Nigerian founder and entrepreneur.
+
+Write a LinkedIn post using this format: ${S.fmt}
+Tone: ${S.tone}
+Topic: ${topic}
+Writer context: ${ctx || 'Nigerian founder building digital products'}
+Target audience: ${audience || 'founders, entrepreneurs, tech professionals'}
+
+Strict rules:
+- Under 1400 characters total
+- First line must STOP THE SCROLL — never start with "I am excited to share", "Today I learned", or "Proud to announce"
+- Write in an authentic ${ctx ? ctx : 'Nigerian founder'} voice — raw, specific, not sanitised
+- Include a specific detail, number, or story beat that makes it feel real, not generic
+- End with ONE question or prompt that triggers genuine replies
+- ${tags ? 'Add exactly these hashtags on a new line at the end: ' + tags : 'Add 3–5 tightly relevant hashtags on a new line at the end'}
+- No hollow corporate language, no filler phrases
+- Return ONLY the post text, nothing else`, 800);
+    S.lastPostText = text;
+    const out = document.getElementById('post-out');
+    out.textContent = text;
+    out.classList.remove('empty');
+    document.getElementById('post-result-wrap').style.display = 'block';
+    document.getElementById('variant-btn').style.display = 'flex';
+    updateCharRing(text);
+  } catch(e) { if (e.message !== 'No API key set') alert('Error: ' + e.message); }
+  loader('post-loader', false);
+}
+
+async function genVariant() {
+  if (!S.lastTopic) return;
+  loader('post-loader', true);
+  document.getElementById('post-out').textContent = '';
+  try {
+    const text = await claude(
+`You are a LinkedIn ghostwriter. Write a NOTICEABLY DIFFERENT version of a post on this topic.
+
+Topic: ${S.lastTopic}
+Format: ${S.fmt} — but vary the structure and angle significantly from a typical approach
+Tone: ${S.tone}
+
+The opening line, structure, and argument must be different from the previous attempt.
+Under 1400 chars. Strong hook. Real specificity. Engagement question at the end. 3–5 hashtags.
+Return ONLY the post text.`, 800);
+    S.lastPostText = text;
+    const out = document.getElementById('post-out');
+    out.textContent = text;
+    out.classList.remove('empty');
+    updateCharRing(text);
+  } catch(e) { if (e.message !== 'No API key set') alert('Error: ' + e.message); }
+  loader('post-loader', false);
+}
+
+function clearPost() {
+  ['post-topic','post-ctx','post-tags','post-audience'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('post-out').textContent = '';
+  document.getElementById('post-result-wrap').style.display = 'none';
+  document.getElementById('variant-btn').style.display = 'none';
+  updateCharRing('');
+}
+
+function savePost() {
+  const text = document.getElementById('post-out').innerText;
+  const topic = document.getElementById('post-topic').value.trim() || 'Untitled';
+  if (!text) return;
+  S.saved.unshift({ topic, text, savedAt: new Date().toISOString() });
+  localStorage.setItem('li_saved', JSON.stringify(S.saved));
+  renderSaved();
+  document.getElementById('saved-count-label').textContent = S.saved.length + ' draft' + (S.saved.length !== 1 ? 's' : '');
+  const btn = document.querySelector('[onclick="savePost()"]');
+  if (btn) { const orig = btn.innerHTML; btn.innerHTML = btn.innerHTML.replace(/Save draft/, 'Saved!'); setTimeout(() => btn.innerHTML = orig, 1500); }
+}
+
+// ── FEED ANALYSER ───────────────────────────────────────────────────────
+async function genFeed() {
+  const inp = document.getElementById('feed-in').value.trim();
+  if (!inp) { alert('Paste your feed content first.'); return; }
+  const focus = document.getElementById('feed-focus').value.trim();
+  const goal = document.getElementById('feed-goal').value;
+  loader('feed-loader', true);
+  document.getElementById('feed-results').style.display = 'none';
+  try {
+    const raw = await claude(
+`You are a LinkedIn intelligence analyst. A Nigerian founder has pasted their scraped LinkedIn feed.
+Focus area: ${focus || 'Nigerian tech and digital products'}
+Analysis goal: ${goal}
+
+Analyse the feed and return ONLY a valid JSON object with these exact keys:
+{
+  "post_count": <number, estimate of distinct posts>,
+  "topic_count": <number of distinct topics found>,
+  "insights": [
+    "Specific insight 1 (one clear sentence with real detail)",
+    "Specific insight 2",
+    "Specific insight 3",
+    "Specific insight 4",
+    "Specific insight 5"
+  ],
+  "engage": [
+    {"post": "Short description of the post", "why": "Why to engage with this", "angle": "Suggested comment approach"},
+    {"post": "...", "why": "...", "angle": "..."},
+    {"post": "...", "why": "...", "angle": "..."}
+  ],
+  "ideas": [
+    "Post idea 1 — specific and actionable",
+    "Post idea 2 — specific and actionable",
+    "Post idea 3 — specific and actionable",
+    "Post idea 4 — specific and actionable"
+  ],
+  "briefing": "A 4-5 sentence intelligence briefing covering the overall feed themes, who is active, what topics are trending, and what the founder should know and do."
+}
+
+FEED CONTENT:
+${inp.slice(0, 5000)}`, 1400);
+
+    let data;
+    try { data = JSON.parse(raw); }
+    catch(e) { const m = raw.match(/\{[\s\S]+\}/); if (m) data = JSON.parse(m[0]); else throw new Error('Parse failed'); }
+
+    document.getElementById('stat-posts').textContent = data.post_count || '~';
+    document.getElementById('stat-topics').textContent = data.topic_count || '~';
+    document.getElementById('stat-ideas').textContent = (data.ideas || []).length || '~';
+
+    // Insights
+    const ins = document.getElementById('feed-seg-insights');
+    ins.innerHTML = '';
+    (data.insights || []).forEach(i => {
+      const d = document.createElement('div');
+      d.className = 'insight';
+      d.textContent = i;
+      ins.appendChild(d);
+    });
+
+    // Engage
+    const eng = document.getElementById('feed-seg-engage');
+    eng.innerHTML = '';
+    (data.engage || []).forEach(e => {
+      const d = document.createElement('div');
+      d.className = 'insight';
+      d.innerHTML = `<div class="insight-title">${e.post}</div><div class="insight-sub" style="margin-bottom:4px">${e.why}</div><div style="font-size:12px;color:var(--li);margin-top:4px">Angle: ${e.angle}</div>`;
+      eng.appendChild(d);
+    });
+
+    // Ideas
+    const ideas = document.getElementById('feed-seg-ideas');
+    ideas.innerHTML = '';
+    (data.ideas || []).forEach((idea, i) => {
+      const d = document.createElement('div');
+      d.className = 'insight insight-clickable';
+      d.innerHTML = `<div style="font-size:10px;font-weight:600;color:var(--li);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">Idea ${i+1} — click to draft</div>${idea}`;
+      d.onclick = () => {
+        navigate('post', document.querySelector('[onclick*="post"]'));
+        document.getElementById('post-topic').value = idea;
+        setTimeout(() => genPost(), 100);
+      };
+      ideas.appendChild(d);
+    });
+
+    // Briefing
+    document.getElementById('feed-briefing-out').textContent = data.briefing || '';
+
+    document.getElementById('feed-results').style.display = 'block';
+  } catch(e) { if (e.message !== 'No API key set') alert('Error: ' + e.message); }
+  loader('feed-loader', false);
+}
+
+function clearFeed() {
+  document.getElementById('feed-in').value = '';
+  document.getElementById('feed-focus').value = '';
+  document.getElementById('feed-results').style.display = 'none';
+  ['stat-posts','stat-topics','stat-ideas'].forEach(id => document.getElementById(id).textContent = '—');
+}
+
+// ── COMMENT ENGINE ──────────────────────────────────────────────────────
+async function genComments() {
+  const post = document.getElementById('cmt-post').value.trim();
+  if (!post) { alert('Paste a LinkedIn post first.'); return; }
+  const ctx = document.getElementById('cmt-ctx').value.trim();
+  const goal = document.getElementById('cmt-goal').value;
+  loader('cmt-loader', true);
+  document.getElementById('cmt-results').style.display = 'none';
+  try {
+    const raw = await claude(
+`You are writing LinkedIn comments for a Nigerian founder.
+
+POST TO COMMENT ON:
+${post}
+
+Commenter: ${ctx || 'Nigerian founder building digital products'}
+Comment goal: ${goal}
+Tone: ${S.ctone}
+
+Generate exactly 3 distinct comments as a JSON array of strings:
+["comment 1","comment 2","comment 3"]
+
+Rules for each comment:
+- 2–3 sentences maximum — punchy and specific
+- NEVER open with "Great post!", "This is so true", "Love this", or empty praise
+- Each comment must have a genuinely different approach, angle, and structure
+- Sound like a real human who actually read the post — not like AI
+- Add real value: a specific insight, question, counter, or experience
+- Authentic voice — raw enough to be believable
+
+Return ONLY the JSON array, no markdown fences.`, 600);
+
+    let comments;
+    try { comments = JSON.parse(raw); }
+    catch(e) { const m = raw.match(/\[[\s\S]+\]/); if (m) comments = JSON.parse(m[0]); else comments = [raw]; }
+
+    const container = document.getElementById('cmt-results');
+    container.innerHTML = '';
+    comments.forEach((c, i) => {
+      const d = document.createElement('div');
+      d.className = 'comment-card';
+      d.innerHTML = `
+        <div class="comment-num">Option ${i + 1}</div>
+        <div class="comment-text" id="cmt-text-${i}">${c}</div>
+        <div class="comment-copy">
+          <button class="copy-btn btn-sm" onclick="copyCmt(${i},this)">
+            <svg viewBox="0 0 24 24" stroke-width="2" style="width:12px;height:12px;stroke:currentColor;fill:none"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy
+          </button>
+        </div>`;
+      container.appendChild(d);
+    });
+    container.style.display = 'block';
+  } catch(e) { if (e.message !== 'No API key set') alert('Error: ' + e.message); }
+  loader('cmt-loader', false);
+}
+
+function copyCmt(i, btn) {
+  const text = document.getElementById('cmt-text-' + i).textContent;
+  navigator.clipboard.writeText(text).catch(() => {});
+  const orig = btn.innerHTML;
+  btn.innerHTML = btn.innerHTML.replace(/Copy/, 'Copied!');
+  setTimeout(() => btn.innerHTML = orig, 1500);
+}
+
+function clearComments() {
+  document.getElementById('cmt-post').value = '';
+  document.getElementById('cmt-ctx').value = '';
+  document.getElementById('cmt-results').style.display = 'none';
+  document.getElementById('cmt-results').innerHTML = '';
+}
+
+// ── CONTENT CALENDAR ────────────────────────────────────────────────────
+async function genCalendar() {
+  const niche = document.getElementById('cal-niche').value.trim();
+  if (!niche) { alert('Add your niche first.'); return; }
+  const freq = parseInt(document.getElementById('cal-freq').value);
+  const pillars = document.getElementById('cal-pillars').value.trim();
+  const events = document.getElementById('cal-events').value.trim();
+  loader('cal-loader', true);
+  document.getElementById('cal-results').style.display = 'none';
+  try {
+    const raw = await claude(
+`You are a LinkedIn content strategist for a Nigerian founder.
+
+Create a 2-week posting calendar.
+Niche: ${niche}
+Posts per week: ${freq}
+Content pillars: ${pillars || 'founder journey, product lessons, industry insights, tools and productivity'}
+Upcoming events: ${events || 'none'}
+
+Return ONLY a JSON array of post objects (${freq * 2} total):
+[
+  {
+    "day": <1–14, where 1=Monday Week1>,
+    "title": "Short compelling post title",
+    "format": "Story|Listicle|Hot take|Tips|Thread|Milestone",
+    "pillar": "pillar name",
+    "hook": "The exact opening line of the post",
+    "cta": "The engagement question at the end"
+  }
+]
+
+Spread posts across non-consecutive days. Return ONLY the JSON array.`, 1400);
+
+    let posts;
+    try { posts = JSON.parse(raw); }
+    catch(e) { const m = raw.match(/\[[\s\S]+\]/); if (m) posts = JSON.parse(m[0]); else throw new Error('Parse failed'); }
+    S.calPosts = posts;
+    renderCalendar(posts);
+    document.getElementById('cal-results').style.display = 'block';
+  } catch(e) { if (e.message !== 'No API key set') alert('Error: ' + e.message); }
+  loader('cal-loader', false);
+}
+
+function renderCalendar(posts) {
+  const today = new Date();
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+
+  const dayMap = {};
+  posts.forEach(p => { if (p.day >= 1 && p.day <= 14) dayMap[p.day] = p; });
+
+  ['w1','w2'].forEach((wk, wi) => {
+    const grid = document.getElementById('cal-grid-' + wk);
+    grid.querySelectorAll('.cal-cell').forEach(c => c.remove());
+    for (let d = 0; d < 7; d++) {
+      const dayNum = wi * 7 + d + 1;
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + (dayNum - 1));
+      const isToday = date.toDateString() === today.toDateString();
+      const post = dayMap[dayNum];
+      const cell = document.createElement('div');
+      cell.className = 'cal-cell' + (isToday ? ' today' : '') + (post ? ' has-post' : '');
+      cell.innerHTML = `<div class="cal-date">${date.getDate()}</div>`;
+      if (post) {
+        const chip = document.createElement('div');
+        chip.className = 'cal-post-chip';
+        chip.textContent = post.title;
+        chip.title = post.hook;
+        chip.onclick = () => draftCalPost(post);
+        cell.appendChild(chip);
+      }
+      grid.appendChild(cell);
+    }
+  });
+
+  // List view
+  const list = document.getElementById('cal-list-items');
+  list.innerHTML = '';
+  posts.forEach(p => {
+    const date = new Date(monday);
+    date.setDate(monday.getDate() + (p.day - 1));
+    const d = document.createElement('div');
+    d.className = 'cal-list-item';
+    d.innerHTML = `
+      <div class="cal-list-date">${date.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</div>
+      <div class="cal-list-body">
+        <div class="cal-list-title">${p.title}</div>
+        <div class="cal-list-meta">${p.format} · ${p.pillar}</div>
+        <div class="cal-list-hook">"${p.hook}"</div>
+      </div>
+      <div class="cal-draft-btn">Draft ↗</div>`;
+    d.onclick = () => draftCalPost(p);
+    list.appendChild(d);
+  });
+}
+
+function draftCalPost(post) {
+  navigate('post', document.querySelectorAll('.nav-item')[0]);
+  document.getElementById('post-topic').value = post.title;
+  document.getElementById('post-ctx').value = '';
+  setTimeout(async () => {
+    const out = document.getElementById('post-out');
+    document.getElementById('post-result-wrap').style.display = 'block';
+    document.getElementById('variant-btn').style.display = 'flex';
+    loader('post-loader', true);
+    try {
+      const text = await claude(
+`Draft a LinkedIn ${post.format} post.
+Title: ${post.title}
+Opening hook (use this EXACTLY as the first line): "${post.hook}"
+Closing CTA (adapt this into the final question): "${post.cta}"
+Format: ${post.format}
+Authentic Nigerian founder voice. Under 1300 chars. 3–5 hashtags at the end.
+Return ONLY the post text.`, 700);
+      S.lastPostText = text;
+      S.lastTopic = post.title;
+      out.textContent = text;
+      out.classList.remove('empty');
+      updateCharRing(text);
+    } catch(e) { if (e.message !== 'No API key set') alert('Error: ' + e.message); }
+    loader('post-loader', false);
+  }, 100);
+}
+
+function clearCal() {
+  document.getElementById('cal-niche').value = '';
+  document.getElementById('cal-pillars').value = '';
+  document.getElementById('cal-events').value = '';
+  document.getElementById('cal-results').style.display = 'none';
+}
+
+// ── SAVED POSTS ─────────────────────────────────────────────────────────
+function renderSaved() {
+  const container = document.getElementById('saved-list');
+  if (!S.saved.length) {
+    container.innerHTML = '<div style="color:var(--faint);font-size:13px;padding:20px 0">No saved drafts yet. Generate a post and click "Save draft."</div>';
+    return;
+  }
+  container.innerHTML = '';
+  S.saved.forEach((item, i) => {
+    const d = document.createElement('div');
+    d.className = 'comment-card';
+    const date = new Date(item.savedAt).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+    d.innerHTML = `
+      <div class="comment-num">${item.topic} — ${date}</div>
+      <div class="comment-text" id="saved-${i}" style="padding-right:0;white-space:pre-wrap">${item.text}</div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="copy-btn" onclick="copySaved(${i},this)">
+          <svg viewBox="0 0 24 24" stroke-width="2" style="width:13px;height:13px;stroke:currentColor;fill:none"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copy post
+        </button>
+        <button class="copy-btn" onclick="deleteSaved(${i})" style="color:var(--danger)">Delete</button>
+      </div>`;
+    container.appendChild(d);
+  });
+  document.getElementById('saved-count-label').textContent = S.saved.length + ' draft' + (S.saved.length !== 1 ? 's' : '');
+}
+
+function copySaved(i, btn) {
+  navigator.clipboard.writeText(S.saved[i].text).catch(() => {});
+  const orig = btn.innerHTML;
+  btn.innerHTML = btn.innerHTML.replace(/Copy post/, 'Copied!');
+  setTimeout(() => btn.innerHTML = orig, 1500);
+}
+
+function deleteSaved(i) {
+  S.saved.splice(i, 1);
+  localStorage.setItem('li_saved', JSON.stringify(S.saved));
+  renderSaved();
+}
+</script>
+</body>
+</html>
